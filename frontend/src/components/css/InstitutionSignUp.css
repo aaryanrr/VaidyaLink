@@ -1,0 +1,116 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+:root {
+    --primary-bg: #1F1B24;
+    --text-color: #E1E1E6;
+    --accent-color: #BB86FC;
+    --input-bg: #3C3C44;
+    --input-text-color: #E1E1E6;
+    --input-border-color: #5A5A66;
+    --button-bg: #BB86FC;
+    --button-hover-bg: #9B65E7;
+    --button-text-color: #1F1B24;
+    font-family: 'Roboto', sans-serif;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+    background-color: var(--primary-bg);
+    color: var(--text-color);
+    overflow-x: hidden;
+}
+
+.signup-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    text-align: center;
+    padding: 20px;
+}
+
+.signup-logo {
+    height: 190px;
+    margin-bottom: 20px;
+}
+
+.signup-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 400px;
+    background-color: var(--primary-bg);
+    padding: 20px;
+}
+
+.signup-form input {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 10px 0;
+    border: 1px solid var(--input-border-color);
+    border-radius: 5px;
+    background-color: var(--input-bg);
+    color: var(--input-text-color);
+    font-size: 16px;
+    outline: none;
+}
+
+.signup-form input:focus {
+    border-color: var(--accent-color);
+}
+
+.file-input {
+    padding: 12px;
+}
+
+.signup-button {
+    background-color: var(--button-bg);
+    border: none;
+    color: var(--button-text-color);
+    padding: 15px 30px;
+    font-size: 18px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-weight: bold;
+    margin-top: 15px
+}
+
+.signup-button:hover {
+    background-color: var(--button-hover-bg);
+}
+
+.signup-form a {
+    color: var(--accent-color);
+    text-decoration: none;
+    margin-top: 20px;
+}
+
+.signup-form a:hover {
+    text-decoration: underline;
+}
+
+.signup-footer {
+    width: 100%;
+    max-width: 1200px;
+    padding: 20px 0;
+    background-color: var(--primary-bg);
+    color: var(--secondary-text-color);
+    position: absolute;
+    bottom: 0;
+    text-align: center;
+}
+
+.success-message {
+    color: green;
+    margin-top: 10px;
+}
+
+.error-message {
+    color: red;
+    margin-top: 10px;
+}
