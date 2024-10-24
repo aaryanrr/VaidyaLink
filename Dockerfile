@@ -10,7 +10,7 @@ COPY frontend/package*.json ./
 # Install dependencies
 RUN npm install
 
-# Nodemon to monitor changes and reload
+# Nodemon to monitor changes and reload (optional if needed for local dev)
 RUN npm install -g nodemon
 
 # Copy the rest of the React app's source code
@@ -18,6 +18,7 @@ COPY frontend/ .
 
 # Build the React app for production
 RUN npm run build
+
 
 # Stage 2: Build the Spring Boot app with Java and Gradle
 FROM eclipse-temurin:17-jdk-alpine
@@ -55,6 +56,9 @@ WORKDIR /app
 COPY gradlew gradlew
 COPY gradle/ gradle/
 
+# Ensure Gradle wrapper has executable permissions
+RUN chmod +x gradlew
+
 # Copy the Spring Boot project files
 COPY build.gradle settings.gradle ./
 COPY src/ src/
@@ -63,7 +67,7 @@ COPY src/ src/
 COPY --from=build-frontend /app/frontend/build src/main/resources/static/
 
 # Run the Gradle build to compile the project without running tests
-RUN chmod +x ./gradlew && ./gradlew clean build --no-daemon -x test
+RUN ./gradlew clean build --no-daemon -x test
 
 # Expose the application, MySQL, and Ganache ports
 EXPOSE 8080 3306 8545
