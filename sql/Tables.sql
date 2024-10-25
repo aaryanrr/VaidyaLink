@@ -22,7 +22,7 @@ CREATE TABLE tokens
     id                  BINARY(16) PRIMARY KEY,
     user_id             BINARY(16),
     institution_reg_num VARCHAR(20),
-    token               VARCHAR(512) NOT NULL,
+    token               VARCHAR(512) NOT NULL UNIQUE,
     expiry_date         TIMESTAMP    NOT NULL,
     CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
     CONSTRAINT fk_institution FOREIGN KEY (institution_reg_num) REFERENCES institutions (registration_number) ON DELETE CASCADE
