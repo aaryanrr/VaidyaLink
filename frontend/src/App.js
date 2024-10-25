@@ -9,6 +9,7 @@ import InstitutionSignUp from './components/InstitutionSignUp';
 import NotFound from './components/NotFound';
 import InstitutionDashboard from "./components/InstitutionDashboard";
 import PrivateRoute from './components/PrivateRoute';
+import InviteUser from './components/InviteUser';
 
 function App() {
     return (
@@ -26,6 +27,14 @@ function App() {
                         element={
                             <PrivateRoute>
                                 <InstitutionDashboard/>
+                            </PrivateRoute>
+                        }
+                    />
+                    <Route
+                        path="/invite-new-user"
+                        element={
+                            <PrivateRoute>
+                                <InviteUser/>
                             </PrivateRoute>
                         }
                     />
