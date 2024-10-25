@@ -21,6 +21,12 @@ public class UserService {
 
     public void inviteUser(String name, String email, String aadhaarNumberHash, String phoneNumber, LocalDate dateOfBirth,
                            String address, String bloodGroup, String emergencyContact, String allergies, Double heightCm, Double weightKg) {
+
+        Optional<User> existingUser = userRepository.findByAadhaarNumberHash(aadhaarNumberHash);
+        if (existingUser.isPresent()) {
+            throw new IllegalArgumentException("User with this Aadhaar already exists.");
+        }
+
         User user = new User();
         user.setName(name);
         user.setEmail(email);
@@ -33,10 +39,12 @@ public class UserService {
         user.setAllergies(allergies);
         user.setHeightCm(heightCm);
         user.setWeightKg(weightKg);
+
+        user.setPassword(passwordEncoder.encode("random123"));
+
         userRepository.save(user);
     }
 
-    // Existing methods remain the same
     public void registerUser(String aadhaarNumberHash, String rawPassword) {
         User user = new User();
         user.setAadhaarNumberHash(aadhaarNumberHash);

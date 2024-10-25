@@ -49,7 +49,7 @@ public class UserController {
                                              @RequestParam Double weightKg) {
 
         String aadhaarHash = hashAadhaar(aadhaar);
-        LocalDate dob = LocalDate.parse(dateOfBirth); // Assumes date is provided in 'yyyy-MM-dd' format
+        LocalDate dob = LocalDate.parse(dateOfBirth);
         userService.inviteUser(name, email, aadhaarHash, phoneNumber, dob, address, bloodGroup, emergencyContact, allergies, heightCm, weightKg);
         return ResponseEntity.ok("User invited successfully!");
     }
