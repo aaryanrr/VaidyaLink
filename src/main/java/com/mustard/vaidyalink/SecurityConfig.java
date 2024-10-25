@@ -46,6 +46,7 @@ public class SecurityConfig {
                 }))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/static/**", "/favicon.ico", "/api/users/login", "/api/institutions/login", "/api/users/register", "/api/institutions/register", "/api/status").permitAll()
+                        .requestMatchers("/api/users/invite").authenticated() // Ensure invite endpoint requires authentication
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
