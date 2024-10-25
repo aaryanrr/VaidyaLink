@@ -1,0 +1,114 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+:root {
+    --primary-bg: #1F1B24;
+    --accent-color: #BB86FC;
+    --text-color: #E1E1E6;
+    --input-bg: #3A3A3C;
+    --input-border: #6A6A6C;
+    font-family: 'Roboto', sans-serif;
+}
+
+.invite-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background-color: var(--primary-bg);
+    color: var(--text-color);
+    padding: 0 20px;
+}
+
+.invite-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.invite-logo {
+    height: 100px;
+    margin-top: 100px;
+}
+
+.invite-form {
+    width: 100%;
+    max-width: 800px;
+}
+
+.form-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    gap: 40px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.form-group label {
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.form-group input,
+.form-group textarea {
+    padding: 10px;
+    background-color: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 5px;
+    color: var(--text-color);
+    font-size: 1rem;
+    width: 100%;
+}
+
+textarea {
+    resize: vertical;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.invite-button,
+.back-button {
+    padding: 10px 30px;
+    background-color: var(--accent-color);
+    border: none;
+    border-radius: 8px;
+    color: var(--text-color);
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.invite-button:hover,
+.back-button:hover {
+    background-color: #9e63f9;
+}
+
+.success-message {
+    color: lightgreen;
+    margin-top: 20px;
+    text-align: center;
+}
+
+.error-message {
+    color: lightcoral;
+    margin-top: 20px;
+    text-align: center;
+}
+
+.invite-user-footer {
+    width: 100%;
+    text-align: center;
+    margin-top: 20px;
+    padding: 10px 0;
+    background-color: var(--primary-bg);
+    color: var(--text-color);
+}
