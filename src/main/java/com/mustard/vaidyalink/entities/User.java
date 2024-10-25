@@ -52,10 +52,10 @@ public class User {
     @Column(name = "allergies")
     private String allergies;
 
-    @Column(name = "height_cm", precision = 5, scale = 2)
+    @Column(name = "height_cm", precision = 5)
     private Double heightCm;
 
-    @Column(name = "weight_kg", precision = 5, scale = 2)
+    @Column(name = "weight_kg", precision = 5)
     private Double weightKg;
 
     @Column(name = "created_at", nullable = false, updatable = false)
