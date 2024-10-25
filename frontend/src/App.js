@@ -7,6 +7,7 @@ import About from './components/About';
 import SignUp from './components/InstitutionSignUp';
 import InstitutionSignUp from './components/InstitutionSignUp';
 import NotFound from './components/NotFound';
+import InstitutionDashboard from "./components/InstitutionDashboard";
 
 function App() {
     return (
@@ -19,6 +20,7 @@ function App() {
                     <Route path="/about" element={<About/>}/>
                     <Route path="/signup" element={<SignUp/>}/>
                     <Route path="/institution-signup" element={<InstitutionSignUp/>}/>
+                    <Route path="/institution-dashboard" element={<InstitutionDashboard/>}/>
                     <Route path="*" element={<NotFound/>}/>
                 </Routes>
             </div>

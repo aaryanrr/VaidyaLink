@@ -1,0 +1,96 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+:root {
+    --primary-bg: #1F1B24; /* Darker background */
+    --accent-color: #BB86FC; /* Main accent color */
+    --text-color: #E1E1E6; /* Main text color */
+    --input-bg: #3A3A3C; /* Background for input fields */
+    --input-border: #6A6A6C; /* Border color for input fields */
+    font-family: 'Roboto', sans-serif;
+}
+
+.dashboard-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: var(--primary-bg);
+    color: var(--text-color);
+    padding: 0 20px;
+}
+
+.dashboard-header {
+    text-align: center;
+}
+
+.dashboard-logo {
+    height: 150px; /* Logo size */
+    margin-bottom: 20px; /* Spacing under the logo */
+}
+
+h1 {
+    font-size: 2.5rem;
+    font-weight: 400;
+    margin-bottom: 40px; /* Spacing below the title */
+}
+
+.dashboard-options {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.dashboard-row {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    max-width: 600px;
+    margin-bottom: 20px; /* Spacing between button rows */
+}
+
+.dashboard-option {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 15px 25px;
+    font-size: 1.2rem;
+    color: var(--text-color);
+    background-color: var(--accent-color);
+    text-align: center;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+    margin: 0 10px; /* Space between buttons */
+    max-width: 300px;
+}
+
+.dashboard-option:hover {
+    background-color: var(--button-hover-bg);
+}
+
+.arrow {
+    font-size: 1.5rem;
+}
+
+.centered-row {
+    justify-content: center;
+    margin-top: 40px; /* Extra spacing for the centered row */
+}
+
+.centered-option {
+    max-width: 300px; /* Make sure it's centered and not too wide */
+}
+
+.dashboard-footer {
+    width: 100%;
+    max-width: 1200px;
+    padding: 20px 0;
+    background-color: var(--primary-bg);
+    color: var(--text-color);
+    position: absolute;
+    bottom: 0;
+    text-align: center;
+}
