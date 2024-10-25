@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -11,7 +12,8 @@ import java.util.UUID;
 @Getter
 @Entity
 @Table(name = "users", indexes = {
-        @Index(name = "idx_users_aadhaar_hash", columnList = "aadhaar_number_hash", unique = true)
+        @Index(name = "idx_users_aadhaar_hash", columnList = "aadhaar_number_hash", unique = true),
+        @Index(name = "idx_users_email", columnList = "email", unique = true)
 })
 public class User {
 
@@ -25,6 +27,36 @@ public class User {
 
     @Column(name = "password", nullable = false)
     private String password;
+
+    @Column(name = "name", nullable = false)
+    private String name;
+
+    @Column(name = "email", nullable = false, unique = true)
+    private String email;
+
+    @Column(name = "phone_number")
+    private String phoneNumber;
+
+    @Column(name = "date_of_birth")
+    private LocalDate dateOfBirth;
+
+    @Column(name = "address")
+    private String address;
+
+    @Column(name = "blood_group")
+    private String bloodGroup;
+
+    @Column(name = "emergency_contact")
+    private String emergencyContact;
+
+    @Column(name = "allergies")
+    private String allergies;
+
+    @Column(name = "height_cm", precision = 5, scale = 2)
+    private Double heightCm;
+
+    @Column(name = "weight_kg", precision = 5, scale = 2)
+    private Double weightKg;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
