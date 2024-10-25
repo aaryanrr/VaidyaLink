@@ -41,3 +41,4 @@ CREATE TABLE tokens
 
 CREATE INDEX idx_users_aadhaar_hash ON users (aadhaar_number_hash);
 CREATE INDEX idx_institutions_email ON institutions (email);
+CREATE INDEX idx_users_email ON users (email);
