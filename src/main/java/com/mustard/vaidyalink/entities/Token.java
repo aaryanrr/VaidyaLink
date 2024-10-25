@@ -18,7 +18,7 @@ public class Token {
     @Column(columnDefinition = "BINARY(16)", nullable = false)
     private UUID id;
 
-    @Column(name = "token", nullable = false, unique = true)
+    @Column(name = "token", nullable = false, unique = true, length = 512)
     private String token;
 
     @Column(name = "expiry_date", nullable = false)

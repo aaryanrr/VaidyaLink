@@ -98,4 +98,17 @@ public class InstitutionService {
         jwtToken.setInstitution(institution);
         tokenRepository.save(jwtToken);
     }
+
+    public boolean validateToken(String token) {
+        Optional<Token> tokenOptional = tokenRepository.findByToken(token);
+        if (tokenOptional.isPresent()) {
+            Token jwtToken = tokenOptional.get();
+            return !jwtToken.getExpiryDate().isBefore(LocalDateTime.now());
+        }
+        return false;
+    }
+
+    public void invalidateToken(String token) {
+        tokenRepository.deleteByToken(token);
+    }
 }

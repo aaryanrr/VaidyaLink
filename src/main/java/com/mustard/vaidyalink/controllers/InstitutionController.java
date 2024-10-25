@@ -50,6 +50,18 @@ public class InstitutionController {
         }
     }
 
+    @GetMapping("/dashboard")
+    public ResponseEntity<String> getDashboard(@RequestHeader("Authorization") String token) {
+        String email = jwtUtil.extractUsername(token.substring(7)); // remove "Bearer " from token
+        Optional<Institution> institution = institutionService.findByEmail(email);
+
+        if (institution.isPresent()) {
+            return ResponseEntity.ok("Access granted to dashboard");
+        } else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied. Please login.");
+        }
+    }
+
     @Setter
     @Getter
     public static class LoginRequest {
