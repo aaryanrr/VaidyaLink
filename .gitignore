@@ -57,3 +57,6 @@ Dockerfile.dev
 
 ### MISC ###
 uploads/
+
+### ENV FILE ###
+.env
