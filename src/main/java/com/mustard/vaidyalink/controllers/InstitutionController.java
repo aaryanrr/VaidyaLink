@@ -52,13 +52,26 @@ public class InstitutionController {
 
     @GetMapping("/dashboard")
     public ResponseEntity<String> getDashboard(@RequestHeader("Authorization") String token) {
-        String email = jwtUtil.extractUsername(token.substring(7)); // remove "Bearer " from token
+        String jwtToken = token.startsWith("Bearer ") ? token.substring(7) : token;
+        String email = jwtUtil.extractUsername(jwtToken);
         Optional<Institution> institution = institutionService.findByEmail(email);
 
-        if (institution.isPresent()) {
+        if (institution.isPresent() && institutionService.validateToken(jwtToken)) {
             return ResponseEntity.ok("Access granted to dashboard");
         } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied. Please login.");
+        }
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(@RequestHeader("Authorization") String token) {
+        String jwtToken = token.startsWith("Bearer ") ? token.substring(7) : token;
+        boolean isRemoved = institutionService.invalidateToken(jwtToken);
+
+        if (isRemoved) {
+            return ResponseEntity.ok("Logged out successfully.");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Token not found or already invalidated.");
         }
     }
 

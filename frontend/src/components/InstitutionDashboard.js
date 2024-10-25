@@ -5,11 +5,26 @@ import logo from '../assets/Logo.png';
 
 const InstitutionDashboard = () => {
     const navigate = useNavigate();
+    const handleLogout = async () => {
+        const token = localStorage.getItem('token');
 
-    const handleLogout = () => {
-        localStorage.removeItem('token'); // Clear JWT token
-        navigate('/institution'); // Redirect to login page
+        if (token) {
+            try {
+                await fetch('http://localhost:8080/api/institutions/logout', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+            } catch (error) {
+                console.error('Error during logout:', error);
+            }
+        }
+        localStorage.removeItem('token');
+        navigate('/institution');
     };
+
 
     return (
         <div className="dashboard-container">

@@ -5,6 +5,8 @@ import com.mustard.vaidyalink.entities.Token;
 import com.mustard.vaidyalink.repositories.InstitutionRepository;
 import com.mustard.vaidyalink.repositories.TokenRepository;
 import com.mustard.vaidyalink.utils.JwtUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,6 +26,8 @@ public class InstitutionService {
     private final TokenRepository tokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private static final Logger logger = LoggerFactory.getLogger(InstitutionService.class);
+
 
     public InstitutionService(InstitutionRepository institutionRepository, PasswordEncoder passwordEncoder, TokenRepository tokenRepository, JwtUtil jwtUtil) {
         this.institutionRepository = institutionRepository;
@@ -68,7 +72,6 @@ public class InstitutionService {
     public String saveFile(MultipartFile file) {
         try {
             String uploadDir = "uploads/";
-
             Path uploadPath = Paths.get(uploadDir);
             if (!Files.exists(uploadPath)) {
                 Files.createDirectories(uploadPath);
@@ -76,7 +79,6 @@ public class InstitutionService {
 
             String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
             Path filePath = uploadPath.resolve(fileName);
-
             Files.copy(file.getInputStream(), filePath);
 
             return filePath.toString();
@@ -101,14 +103,18 @@ public class InstitutionService {
 
     public boolean validateToken(String token) {
         Optional<Token> tokenOptional = tokenRepository.findByToken(token);
-        if (tokenOptional.isPresent()) {
-            Token jwtToken = tokenOptional.get();
-            return !jwtToken.getExpiryDate().isBefore(LocalDateTime.now());
-        }
-        return false;
+        return tokenOptional.isPresent() && !tokenOptional.get().getExpiryDate().isBefore(LocalDateTime.now());
     }
 
-    public void invalidateToken(String token) {
-        tokenRepository.deleteByToken(token);
+    public boolean invalidateToken(String token) {
+        Optional<Token> tokenOptional = tokenRepository.findByToken(token);
+        if (tokenOptional.isPresent()) {
+            tokenRepository.delete(tokenOptional.get());
+            logger.info("Token deleted successfully: {}", token);
+            return true;
+        } else {
+            logger.warn("Token not found for deletion: {}", token);
+            return false;
+        }
     }
 }
