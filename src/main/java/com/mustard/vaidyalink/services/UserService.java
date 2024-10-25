@@ -26,8 +26,8 @@ public class UserService {
 
     public void inviteUser(String name, String email, String aadhaarNumberHash, String phoneNumber, LocalDate dateOfBirth,
                            String address, String bloodGroup, String emergencyContact, String allergies, Double heightCm, Double weightKg) {
-        String rawPassword = generateRandomPassword(); // Generate password
-        String encodedPassword = passwordEncoder.encode(rawPassword); // Encrypt password
+        String rawPassword = generateRandomPassword();
+        String encodedPassword = passwordEncoder.encode(rawPassword);
 
         User user = new User();
         user.setName(name);
