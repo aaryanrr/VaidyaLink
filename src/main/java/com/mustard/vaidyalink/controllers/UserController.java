@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDate;
 import java.util.Optional;
 
 @RestController
@@ -37,6 +38,20 @@ public class UserController {
         String aadhaarHash = hashAadhaar(aadhaar);
         userService.registerUser(aadhaarHash, password);
         return ResponseEntity.ok("User registered successfully!");
+    }
+
+    @PostMapping("/invite")
+    public ResponseEntity<String> inviteUser(@RequestParam String name, @RequestParam String email,
+                                             @RequestParam String aadhaar, @RequestParam String phoneNumber,
+                                             @RequestParam String dateOfBirth, @RequestParam String address,
+                                             @RequestParam String bloodGroup, @RequestParam String emergencyContact,
+                                             @RequestParam String allergies, @RequestParam Double heightCm,
+                                             @RequestParam Double weightKg) {
+
+        String aadhaarHash = hashAadhaar(aadhaar);
+        LocalDate dob = LocalDate.parse(dateOfBirth); // Assumes date is provided in 'yyyy-MM-dd' format
+        userService.inviteUser(name, email, aadhaarHash, phoneNumber, dob, address, bloodGroup, emergencyContact, allergies, heightCm, weightKg);
+        return ResponseEntity.ok("User invited successfully!");
     }
 
     @GetMapping("/find")
