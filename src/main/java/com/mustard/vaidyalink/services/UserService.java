@@ -43,8 +43,12 @@ public class UserService {
         user.setWeightKg(weightKg);
         user.setPassword(encodedPassword);
 
-        userRepository.save(user);
-        mailgunService.sendPasswordEmail(email, "Your Temporary Password", rawPassword);
+        User savedUser = userRepository.save(user);
+        if (savedUser.getId() != null) {
+            mailgunService.sendPasswordEmail(email, "Your Temporary Password", rawPassword);
+        } else {
+            throw new RuntimeException("Failed to save user to the database.");
+        }
     }
 
     public void registerUser(String aadhaarNumberHash, String rawPassword) {
