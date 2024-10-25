@@ -1,13 +1,14 @@
 import React, {useState} from 'react';
-import {Link} from 'react-router-dom';
+import {useNavigate, Link} from 'react-router-dom';
 import './css/InstitutionLogin.css';
 import logo from '../assets/Logo.png';
 
-function Institution() {
+function InstitutionLogin() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
+    const navigate = useNavigate();  // useNavigate hook for redirection
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -25,11 +26,14 @@ function Institution() {
                 if (contentType && contentType.includes('application/json')) {
                     const data = await response.json();
                     setSuccessMessage('Login successful!');
-                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('token', data.token); // Store the JWT token
+                    setErrorMessage('');
+                    navigate('/institution-dashboard'); // Redirect to the dashboard
                 } else {
                     setSuccessMessage('Login successful!');
+                    setErrorMessage('');
+                    navigate('/institution-dashboard'); // Redirect to the dashboard
                 }
-                setErrorMessage('');
             } else {
                 const errorData = await response.json();
                 setErrorMessage(errorData.message || 'Invalid email or password.');
@@ -49,7 +53,7 @@ function Institution() {
             </div>
             <form className="institution-form" onSubmit={handleSubmit}>
                 <input
-                    type="text"
+                    type="email"  // Updated input type for email validation
                     placeholder="Email Address"
                     className="institution-input"
                     value={email}
@@ -78,4 +82,4 @@ function Institution() {
     );
 }
 
-export default Institution;
+export default InstitutionLogin;

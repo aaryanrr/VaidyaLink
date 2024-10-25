@@ -25,14 +25,14 @@
 }
 
 .dashboard-logo {
-    height: 150px; /* Logo size */
-    margin-bottom: 20px; /* Spacing under the logo */
+    height: 150px;
+    margin-bottom: 20px;
 }
 
 h1 {
     font-size: 2.5rem;
     font-weight: 400;
-    margin-bottom: 40px; /* Spacing below the title */
+    margin-bottom: 40px;
 }
 
 .dashboard-options {
@@ -47,7 +47,7 @@ h1 {
     justify-content: center;
     width: 100%;
     max-width: 600px;
-    margin-bottom: 20px; /* Spacing between button rows */
+    margin-bottom: 20px;
 }
 
 .dashboard-option {
@@ -63,7 +63,7 @@ h1 {
     text-decoration: none;
     border-radius: 8px;
     transition: background-color 0.3s ease;
-    margin: 0 10px; /* Space between buttons */
+    margin: 0 10px;
     max-width: 300px;
 }
 
@@ -77,11 +77,11 @@ h1 {
 
 .centered-row {
     justify-content: center;
-    margin-top: 40px; /* Extra spacing for the centered row */
+    margin-top: 40px;
 }
 
 .centered-option {
-    max-width: 300px; /* Make sure it's centered and not too wide */
+    max-width: 300px;
 }
 
 .dashboard-footer {
@@ -93,4 +93,17 @@ h1 {
     position: absolute;
     bottom: 0;
     text-align: center;
+}
+
+.profile-actions {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    width: 100%;
+}
+
+.centered-row {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
 }

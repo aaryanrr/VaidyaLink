@@ -1,9 +1,16 @@
 import React from 'react';
 import './css/InstitutionDashboard.css';
-import {Link} from 'react-router-dom';
-import logo from '../assets/Logo.png'; // Adjust the path if necessary
+import {Link, useNavigate} from 'react-router-dom';
+import logo from '../assets/Logo.png';
 
 const InstitutionDashboard = () => {
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        localStorage.removeItem('token'); // Clear JWT token
+        navigate('/institution'); // Redirect to login page
+    };
+
     return (
         <div className="dashboard-container">
             <header className="dashboard-header">
@@ -34,6 +41,9 @@ const InstitutionDashboard = () => {
                     <Link to="/profile-settings" className="dashboard-option centered-option">
                         Profile Settings<span className="arrow">➜</span>
                     </Link>
+                    <button onClick={handleLogout} className="dashboard-option logout-button">
+                        Logout<span className="arrow">➜</span>
+                    </button>
                 </div>
             </div>
 
