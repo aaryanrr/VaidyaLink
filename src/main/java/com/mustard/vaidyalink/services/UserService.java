@@ -7,25 +7,27 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.Optional;
+import java.security.SecureRandom;
+
+import com.mustard.vaidyalink.services.MailgunService;
 
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final MailgunService mailgunService;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, MailgunService mailgunService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.mailgunService = mailgunService;
     }
 
     public void inviteUser(String name, String email, String aadhaarNumberHash, String phoneNumber, LocalDate dateOfBirth,
                            String address, String bloodGroup, String emergencyContact, String allergies, Double heightCm, Double weightKg) {
-
-        Optional<User> existingUser = userRepository.findByAadhaarNumberHash(aadhaarNumberHash);
-        if (existingUser.isPresent()) {
-            throw new IllegalArgumentException("User with this Aadhaar already exists.");
-        }
+        String rawPassword = generateRandomPassword(); // Generate password
+        String encodedPassword = passwordEncoder.encode(rawPassword); // Encrypt password
 
         User user = new User();
         user.setName(name);
@@ -39,10 +41,10 @@ public class UserService {
         user.setAllergies(allergies);
         user.setHeightCm(heightCm);
         user.setWeightKg(weightKg);
-
-        user.setPassword(passwordEncoder.encode("random123"));
+        user.setPassword(encodedPassword);
 
         userRepository.save(user);
+        mailgunService.sendPasswordEmail(email, "Your Temporary Password", rawPassword);
     }
 
     public void registerUser(String aadhaarNumberHash, String rawPassword) {
@@ -54,5 +56,17 @@ public class UserService {
 
     public Optional<User> findByAadhaarNumberHash(String aadhaarNumberHash) {
         return userRepository.findByAadhaarNumberHash(aadhaarNumberHash);
+    }
+
+    private String generateRandomPassword() {
+        SecureRandom secureRandom = new SecureRandom();
+        String allowedChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_+=<>?";
+        StringBuilder password = new StringBuilder(12);
+
+        for (int i = 0; i < 12; i++) {
+            int randomIndex = secureRandom.nextInt(allowedChars.length());
+            password.append(allowedChars.charAt(randomIndex));
+        }
+        return password.toString();
     }
 }
