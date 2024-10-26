@@ -25,13 +25,14 @@ public class AccessRequestService {
         AccessRequest accessRequest = new AccessRequest();
         accessRequest.setId(UUID.randomUUID());
         accessRequest.setAadhaarNumber(hashedAadhaar);
-        accessRequest.setDataCategory(requestDto.getDataCategory());
+        accessRequest.setDataCategory(String.join(", ", requestDto.getDataCategory()));
         accessRequest.setTimePeriod(requestDto.getTimePeriod());
-        accessRequest.setActionRequired(requestDto.getActionRequired());
+        accessRequest.setActionRequired(String.join(", ", requestDto.getActionRequired()));
         accessRequest.setApproved(false);
 
         accessRequestRepository.save(accessRequest);
     }
+
 
     private String hashAadhaar(String aadhaar) {
         try {
