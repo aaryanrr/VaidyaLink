@@ -35,7 +35,7 @@ const InstitutionDashboard = () => {
 
             <div className="dashboard-options">
                 <div className="dashboard-row">
-                    <Link to="/request-access" className="dashboard-option">
+                    <Link to="/access-request" className="dashboard-option">
                         Request access<span className="arrow">➜</span>
                     </Link>
                     <Link to="/current-access" className="dashboard-option">
