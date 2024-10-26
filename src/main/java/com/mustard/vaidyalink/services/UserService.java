@@ -85,4 +85,14 @@ public class UserService {
         return tokenEntity.isPresent() && tokenEntity.get().getExpiryDate().isAfter(LocalDate.now().atStartOfDay());
     }
 
+    public boolean invalidateToken(String token) {
+        Optional<Token> tokenOptional = tokenRepository.findByToken(token);
+        if (tokenOptional.isPresent()) {
+            tokenRepository.delete(tokenOptional.get());
+            return true;
+        } else {
+            return false;
+        }
+    }
+
 }
