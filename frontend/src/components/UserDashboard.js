@@ -8,9 +8,28 @@ const UserDashboard = () => {
 
     const handleNavigation = (path) => {
         if (path === '/users') {
-            localStorage.removeItem('token');  // Clear the token
+            localStorage.removeItem('token');
         }
         navigate(path);
+    };
+    const handleLogout = async () => {
+        const token = localStorage.getItem('token');
+
+        if (token) {
+            try {
+                await fetch('http://localhost:8080/api/users/logout', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+            } catch (error) {
+                console.error('Error during logout:', error);
+            }
+        }
+        localStorage.removeItem('token');
+        navigate('/users');
     };
 
     return (
@@ -30,7 +49,7 @@ const UserDashboard = () => {
                     <span>View your records</span>
                     <span className="arrow">→</span>
                 </div>
-                <div className="dashboard-option" onClick={() => handleNavigation('/users')}>
+                <div className="dashboard-option" onClick={handleLogout}>
                     <span>Logout</span>
                     <span className="arrow">→</span>
                 </div>
