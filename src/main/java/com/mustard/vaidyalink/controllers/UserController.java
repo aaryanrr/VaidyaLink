@@ -1,5 +1,6 @@
 package com.mustard.vaidyalink.controllers;
 
+import com.mustard.vaidyalink.dtos.InviteRequest;
 import com.mustard.vaidyalink.entities.User;
 import com.mustard.vaidyalink.services.MyUserDetailsService;
 import com.mustard.vaidyalink.services.UserService;
@@ -41,16 +42,24 @@ public class UserController {
     }
 
     @PostMapping("/invite")
-    public ResponseEntity<String> inviteUser(@RequestParam String name, @RequestParam String email,
-                                             @RequestParam String aadhaar, @RequestParam String phoneNumber,
-                                             @RequestParam String dateOfBirth, @RequestParam String address,
-                                             @RequestParam String bloodGroup, @RequestParam String emergencyContact,
-                                             @RequestParam String allergies, @RequestParam Double heightCm,
-                                             @RequestParam Double weightKg) {
+    public ResponseEntity<String> inviteUser(@RequestBody InviteRequest inviteRequest) {
+        String aadhaarHash = hashAadhaar(inviteRequest.getAadhaar());
+        LocalDate dob = LocalDate.parse(inviteRequest.getDateOfBirth());
 
-        String aadhaarHash = hashAadhaar(aadhaar);
-        LocalDate dob = LocalDate.parse(dateOfBirth);
-        userService.inviteUser(name, email, aadhaarHash, phoneNumber, dob, address, bloodGroup, emergencyContact, allergies, heightCm, weightKg);
+        userService.inviteUser(
+                inviteRequest.getName(),
+                inviteRequest.getEmail(),
+                aadhaarHash,
+                inviteRequest.getPhoneNumber(),
+                dob,
+                inviteRequest.getAddress(),
+                inviteRequest.getBloodGroup(),
+                inviteRequest.getEmergencyContact(),
+                inviteRequest.getAllergies(),
+                inviteRequest.getHeightCm(),
+                inviteRequest.getWeightKg()
+        );
+
         return ResponseEntity.ok("User invited successfully!");
     }
 
