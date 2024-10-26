@@ -7,7 +7,8 @@ import About from './components/About';
 import SignUp from './components/InstitutionSignUp';
 import InstitutionSignUp from './components/InstitutionSignUp';
 import NotFound from './components/NotFound';
-import InstitutionDashboard from "./components/InstitutionDashboard";
+import InstitutionDashboard from './components/InstitutionDashboard';
+import UserDashboard from './components/UserDashboard';
 import PrivateRoute from './components/PrivateRoute';
 import InviteUser from './components/InviteUser';
 
@@ -27,6 +28,14 @@ function App() {
                         element={
                             <PrivateRoute>
                                 <InstitutionDashboard/>
+                            </PrivateRoute>
+                        }
+                    />
+                    <Route
+                        path="/user-dashboard"
+                        element={
+                            <PrivateRoute>
+                                <UserDashboard/>
                             </PrivateRoute>
                         }
                     />
