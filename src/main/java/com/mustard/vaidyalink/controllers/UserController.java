@@ -6,6 +6,7 @@ import com.mustard.vaidyalink.services.MyUserDetailsService;
 import com.mustard.vaidyalink.services.UserService;
 import com.mustard.vaidyalink.services.TokenService;
 import com.mustard.vaidyalink.utils.JwtUtil;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -96,6 +97,13 @@ public class UserController {
         tokenService.saveToken(user, jwt);
 
         return ResponseEntity.ok(Map.of("token", jwt));
+    }
+
+    @PostMapping("/validate-token")
+    public ResponseEntity<?> validateToken(@RequestHeader("Authorization") String token) {
+        token = token.replace("Bearer ", "").trim();
+        boolean isValid = userService.isTokenValid(token);
+        return isValid ? ResponseEntity.ok().build() : ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
 
