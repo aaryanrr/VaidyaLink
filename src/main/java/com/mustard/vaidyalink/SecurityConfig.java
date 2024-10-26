@@ -43,7 +43,8 @@ public class SecurityConfig {
                                 "/api/users/validate-token",
                                 "/api/institutions/validate-token",
                                 "/api/institutions/logout",
-                                "/api/users/logout")
+                                "/api/users/logout",
+                                "/api/access-requests/request")
                 )
                 .cors(cors -> cors.configurationSource(request -> {
                     CorsConfiguration corsConfiguration = new CorsConfiguration();
