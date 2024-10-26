@@ -1,5 +1,8 @@
 import React, {useState, useEffect} from 'react';
 import {useNavigate} from 'react-router-dom';
+import logo from '../assets/Logo.png';
+import './css/UserLogin.css';
+
 
 const validateToken = async (token) => {
     const response = await fetch('/api/users/validate-token', {
@@ -16,6 +19,7 @@ function UserLogin() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
+    const [successMessage, setSuccessMessage] = useState('');
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -38,6 +42,8 @@ function UserLogin() {
             if (response.ok) {
                 const {token} = await response.json();
                 localStorage.setItem('token', token);
+                setSuccessMessage('Login successful!');
+                setErrorMessage('');
                 navigate('/user-dashboard');
             } else {
                 setErrorMessage('Invalid email or password.');
@@ -46,7 +52,6 @@ function UserLogin() {
             setErrorMessage(`Error: ${error.message}`);
         }
     };
-
 
     return (
         <div className="login-container">
