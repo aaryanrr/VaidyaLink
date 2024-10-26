@@ -11,6 +11,7 @@ import InstitutionDashboard from './components/InstitutionDashboard';
 import UserDashboard from './components/UserDashboard';
 import PrivateRoute from './components/PrivateRoute';
 import InviteUser from './components/InviteUser';
+import AccessRequest from './components/AccessRequest';
 
 function App() {
     return (
@@ -44,6 +45,14 @@ function App() {
                         element={
                             <PrivateRoute>
                                 <InviteUser/>
+                            </PrivateRoute>
+                        }
+                    />
+                    <Route
+                        path="/access-request"
+                        element={
+                            <PrivateRoute>
+                                <AccessRequest/>
                             </PrivateRoute>
                         }
                     />
