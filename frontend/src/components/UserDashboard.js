@@ -7,6 +7,9 @@ const UserDashboard = () => {
     const navigate = useNavigate();
 
     const handleNavigation = (path) => {
+        if (path === '/users') {
+            localStorage.removeItem('token');  // Clear the token
+        }
         navigate(path);
     };
 
@@ -25,6 +28,10 @@ const UserDashboard = () => {
                 </div>
                 <div className="dashboard-option" onClick={() => handleNavigation('/view-records')}>
                     <span>View your records</span>
+                    <span className="arrow">→</span>
+                </div>
+                <div className="dashboard-option" onClick={() => handleNavigation('/users')}>
+                    <span>Logout</span>
                     <span className="arrow">→</span>
                 </div>
             </div>
