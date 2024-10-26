@@ -30,11 +30,12 @@ const AccessRequest = () => {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
                 },
                 body: JSON.stringify({
-                    aadhaar,
+                    aadhaarNumber: aadhaar,
                     dataCategory,
                     timePeriod,
                     actionRequired,
                 }),
+
             });
 
             if (response.ok) {
