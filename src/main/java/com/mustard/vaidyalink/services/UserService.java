@@ -1,7 +1,9 @@
 package com.mustard.vaidyalink.services;
 
+import com.mustard.vaidyalink.entities.Token;
 import com.mustard.vaidyalink.entities.User;
 import com.mustard.vaidyalink.repositories.UserRepository;
+import com.mustard.vaidyalink.repositories.TokenRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -9,19 +11,19 @@ import java.time.LocalDate;
 import java.util.Optional;
 import java.security.SecureRandom;
 
-import com.mustard.vaidyalink.services.MailgunService;
-
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final MailgunService mailgunService;
+    private final TokenRepository tokenRepository;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, MailgunService mailgunService) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, MailgunService mailgunService, TokenRepository tokenRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.mailgunService = mailgunService;
+        this.tokenRepository = tokenRepository;
     }
 
     public void inviteUser(String name, String email, String aadhaarNumberHash, String phoneNumber, LocalDate dateOfBirth,
@@ -76,6 +78,11 @@ public class UserService {
 
     public Optional<User> findByEmail(String email) {
         return userRepository.findByEmail(email);
+    }
+
+    public boolean isTokenValid(String token) {
+        Optional<Token> tokenEntity = tokenRepository.findByToken(token);
+        return tokenEntity.isPresent() && tokenEntity.get().getExpiryDate().isAfter(LocalDate.now().atStartOfDay());
     }
 
 }
