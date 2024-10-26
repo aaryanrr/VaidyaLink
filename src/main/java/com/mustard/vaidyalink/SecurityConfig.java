@@ -34,7 +34,15 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/api/users/login", "/api/institutions/login", "/api/users/register", "/api/institutions/register", "/api/status", "/api/users/invite", "/api/users/validate-token")
+                        .ignoringRequestMatchers("/api/users/login",
+                                "/api/institutions/login",
+                                "/api/users/register",
+                                "/api/institutions/register",
+                                "/api/status",
+                                "/api/users/invite",
+                                "/api/users/validate-token",
+                                "/api/institutions/validate-token",
+                                "/api/institutions/logout")
                 )
                 .cors(cors -> cors.configurationSource(request -> {
                     CorsConfiguration corsConfiguration = new CorsConfiguration();
