@@ -1,29 +1,57 @@
 import React, {useState} from 'react';
+import {useNavigate} from 'react-router-dom';
 import './css/AccessRequest.css';
 import logo from '../assets/Logo.png';
-import {useNavigate} from 'react-router-dom';
 
 const AccessRequest = () => {
-    const navigate = useNavigate();
     const [aadhaar, setAadhaar] = useState('');
     const [dataCategory, setDataCategory] = useState([]);
     const [timePeriod, setTimePeriod] = useState('');
     const [actionRequired, setActionRequired] = useState([]);
+    const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        // Handle form submission logic
+    const handleDataCategoryChange = (e) => {
+        const options = Array.from(e.target.selectedOptions, option => option.value);
+        setDataCategory(options);
     };
 
-    const handleMultiSelect = (setState, value) => {
-        setState((prev) => prev.includes(value) ? prev.filter(v => v !== value) : [...prev, value]);
+    const handleActionRequiredChange = (e) => {
+        const options = Array.from(e.target.selectedOptions, option => option.value);
+        setActionRequired(options);
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await fetch('/api/access-request', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    aadhaar,
+                    dataCategory,
+                    timePeriod,
+                    actionRequired,
+                }),
+            });
+
+            if (response.ok) {
+                alert("Access request submitted successfully!");
+                navigate('/institution-dashboard');
+            } else {
+                alert("Failed to submit access request.");
+            }
+        } catch (error) {
+            console.error("Error:", error);
+        }
     };
 
     return (
-        <div className="access-container">
-            <img src={logo} alt="VaidyaLink Logo" className="access-logo"/>
+        <div className="access-request-container">
+            <img src={logo} alt="VaidyaLink Logo" className="access-request-logo"/>
             <h1>Access Request</h1>
-            <form className="access-form" onSubmit={handleSubmit}>
+            <form className="access-request-form" onSubmit={handleSubmit}>
                 <label>Patient's Aadhaar No.:</label>
                 <input
                     type="text"
@@ -33,23 +61,21 @@ const AccessRequest = () => {
                 />
 
                 <label>Data Category:</label>
-                <select multiple value={dataCategory}
-                        onChange={(e) => handleMultiSelect(setDataCategory, e.target.value)}>
+                <select multiple value={dataCategory} onChange={handleDataCategoryChange}>
                     <option value="Basic Data">Basic Data</option>
                     <option value="Medical Reports">Medical Reports</option>
                 </select>
 
                 <label>Time Period:</label>
                 <input
-                    type="text"
+                    type="date"
                     value={timePeriod}
                     onChange={(e) => setTimePeriod(e.target.value)}
                     required
                 />
 
                 <label>Action Required:</label>
-                <select multiple value={actionRequired}
-                        onChange={(e) => handleMultiSelect(setActionRequired, e.target.value)}>
+                <select multiple value={actionRequired} onChange={handleActionRequiredChange}>
                     <option value="Read">Read</option>
                     <option value="Write">Write</option>
                 </select>
@@ -59,7 +85,7 @@ const AccessRequest = () => {
                     <button type="submit" className="request-button">Request</button>
                 </div>
             </form>
-            <footer className="access-footer">
+            <footer className="access-request-footer">
                 &copy; Copyright 2024 | VaidyaLink
             </footer>
         </div>
