@@ -1,7 +1,18 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {useNavigate, Link} from 'react-router-dom';
 import './css/InstitutionLogin.css';
 import logo from '../assets/Logo.png';
+
+const validateToken = async (token) => {
+    const response = await fetch('/api/institutions/validate-token', {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+        },
+    });
+    return response.ok;
+};
 
 function InstitutionLogin() {
     const [email, setEmail] = useState('');
@@ -9,6 +20,15 @@ function InstitutionLogin() {
     const [errorMessage, setErrorMessage] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            validateToken(token).then(isValid => {
+                if (isValid) navigate('/institution-dashboard');
+            });
+        }
+    }, [navigate]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -22,25 +42,18 @@ function InstitutionLogin() {
             });
 
             if (response.ok) {
-                const contentType = response.headers.get('content-type');
-                if (contentType && contentType.includes('application/json')) {
-                    const data = await response.json();
-                    setSuccessMessage('Login successful!');
-                    localStorage.setItem('token', data.token);
-                    setErrorMessage('');
-                    navigate('/institution-dashboard');
-                } else {
-                    setSuccessMessage('Login successful!');
-                    setErrorMessage('');
-                    navigate('/institution-dashboard');
-                }
+                const {token} = await response.json();
+                setSuccessMessage('Login successful!');
+                localStorage.setItem('token', token);
+                setErrorMessage('');
+                navigate('/institution-dashboard');
             } else {
                 const errorData = await response.json();
                 setErrorMessage(errorData.message || 'Invalid email or password.');
                 setSuccessMessage('');
             }
         } catch (error) {
-            setErrorMessage('Error: ' + error.message);
+            setErrorMessage(`Error: ${error.message}`);
             setSuccessMessage('');
         }
     };
@@ -53,7 +66,7 @@ function InstitutionLogin() {
             </div>
             <form className="institution-form" onSubmit={handleSubmit}>
                 <input
-                    type="email"  // Updated input type for email validation
+                    type="email"
                     placeholder="Email Address"
                     className="institution-input"
                     value={email}

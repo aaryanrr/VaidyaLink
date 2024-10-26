@@ -75,6 +75,13 @@ public class InstitutionController {
         }
     }
 
+    @PostMapping("/validate-token")
+    public ResponseEntity<Boolean> validateToken(@RequestHeader("Authorization") String token) {
+        String jwtToken = token.startsWith("Bearer ") ? token.substring(7) : token;
+        boolean isValid = institutionService.validateToken(jwtToken);
+        return ResponseEntity.ok(isValid);
+    }
+
     @Setter
     @Getter
     public static class LoginRequest {
