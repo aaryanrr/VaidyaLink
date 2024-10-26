@@ -8,7 +8,7 @@ function InstitutionLogin() {
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
-    const navigate = useNavigate();  // useNavigate hook for redirection
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -26,13 +26,13 @@ function InstitutionLogin() {
                 if (contentType && contentType.includes('application/json')) {
                     const data = await response.json();
                     setSuccessMessage('Login successful!');
-                    localStorage.setItem('token', data.token); // Store the JWT token
+                    localStorage.setItem('token', data.token);
                     setErrorMessage('');
-                    navigate('/institution-dashboard'); // Redirect to the dashboard
+                    navigate('/institution-dashboard');
                 } else {
                     setSuccessMessage('Login successful!');
                     setErrorMessage('');
-                    navigate('/institution-dashboard'); // Redirect to the dashboard
+                    navigate('/institution-dashboard');
                 }
             } else {
                 const errorData = await response.json();
