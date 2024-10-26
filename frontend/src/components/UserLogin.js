@@ -1,12 +1,14 @@
 import React, {useState} from 'react';
 import './css/UserLogin.css';
 import logo from '../assets/Logo.png';
+import {useNavigate} from "react-router-dom";
 
 function UserLogin() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -24,6 +26,7 @@ function UserLogin() {
                 setSuccessMessage('Login successful!');
                 setErrorMessage('');
                 localStorage.setItem('token', data.token);
+                navigate("/user-dashboard")
             } else {
                 const errorData = await response.json();
                 setErrorMessage(errorData.message || 'Invalid email or password.');
