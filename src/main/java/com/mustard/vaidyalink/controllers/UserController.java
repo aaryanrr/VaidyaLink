@@ -4,18 +4,21 @@ import com.mustard.vaidyalink.dtos.InviteRequest;
 import com.mustard.vaidyalink.entities.User;
 import com.mustard.vaidyalink.services.MyUserDetailsService;
 import com.mustard.vaidyalink.services.UserService;
+import com.mustard.vaidyalink.services.TokenService;
 import com.mustard.vaidyalink.utils.JwtUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -26,12 +29,14 @@ public class UserController {
     private final MyUserDetailsService userDetailsService;
     private final JwtUtil jwtUtil;
     private final UserService userService;
+    private final TokenService tokenService;
 
-    public UserController(AuthenticationManager authenticationManager, MyUserDetailsService userDetailsService, JwtUtil jwtUtil, UserService userService) {
+    public UserController(AuthenticationManager authenticationManager, MyUserDetailsService userDetailsService, JwtUtil jwtUtil, UserService userService, TokenService tokenService) {
         this.authenticationManager = authenticationManager;
         this.userDetailsService = userDetailsService;
         this.jwtUtil = jwtUtil;
         this.userService = userService;
+        this.tokenService = tokenService;
     }
 
     @PostMapping("/register")
@@ -71,19 +76,28 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody User user) {
+    public ResponseEntity<?> login(@RequestBody Map<String, String> loginData) {
+        String email = loginData.get("email");
+        String password = loginData.get("password");
+
         try {
             authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(user.getAadhaarNumberHash(), user.getPassword())
+                    new UsernamePasswordAuthenticationToken(email, password)
             );
         } catch (AuthenticationException e) {
-            return ResponseEntity.status(401).body("Invalid Aadhaar number or password.");
+            return ResponseEntity.status(401).body("Invalid email or password.");
         }
 
-        UserDetails userDetails = userDetailsService.loadUserByUsername(user.getAadhaarNumberHash());
+        UserDetails userDetails = userDetailsService.loadUserByUsername(email);
         String jwt = jwtUtil.generateToken(userDetails.getUsername());
-        return ResponseEntity.ok(jwt);
+
+        User user = userService.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
+        tokenService.saveToken(user, jwt);
+
+        return ResponseEntity.ok(Map.of("token", jwt));
     }
+
 
     private String hashAadhaar(String aadhaar) {
         try {
