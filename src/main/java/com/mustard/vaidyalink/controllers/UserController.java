@@ -106,6 +106,17 @@ public class UserController {
         return isValid ? ResponseEntity.ok().build() : ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(@RequestHeader("Authorization") String token) {
+        String jwtToken = token.startsWith("Bearer ") ? token.substring(7) : token;
+        boolean isRemoved = userService.invalidateToken(jwtToken);
+
+        if (isRemoved) {
+            return ResponseEntity.ok("Logged out successfully.");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Token not found or already invalidated.");
+        }
+    }
 
     private String hashAadhaar(String aadhaar) {
         try {
