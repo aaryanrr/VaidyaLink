@@ -73,4 +73,9 @@ public class UserService {
         }
         return password.toString();
     }
+
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
 }
