@@ -39,6 +39,18 @@ CREATE TABLE tokens
     CONSTRAINT fk_institution FOREIGN KEY (institution_reg_num) REFERENCES institutions (registration_number) ON DELETE CASCADE
 );
 
+CREATE TABLE access_requests
+(
+    id              BINARY(16) PRIMARY KEY,
+    aadhaar_number  VARCHAR(255) NOT NULL,
+    data_category   VARCHAR(255) NOT NULL,
+    time_period     DATE         NOT NULL,
+    action_required VARCHAR(255) NOT NULL,
+    approved        BOOLEAN   DEFAULT FALSE,
+    requested_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
 CREATE INDEX idx_users_aadhaar_hash ON users (aadhaar_number_hash);
 CREATE INDEX idx_institutions_email ON institutions (email);
 CREATE INDEX idx_users_email ON users (email);
