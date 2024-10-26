@@ -3,7 +3,7 @@ import './css/UserLogin.css';
 import logo from '../assets/Logo.png';
 
 function UserLogin() {
-    const [aadhaar, setAadhaar] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
@@ -16,7 +16,7 @@ function UserLogin() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({aadhaar, password}),
+                body: JSON.stringify({email, password}),
             });
 
             if (response.ok) {
@@ -26,7 +26,7 @@ function UserLogin() {
                 localStorage.setItem('token', data.token);
             } else {
                 const errorData = await response.json();
-                setErrorMessage(errorData.message || 'Invalid Aadhaar or password.');
+                setErrorMessage(errorData.message || 'Invalid email or password.');
                 setSuccessMessage('');
             }
         } catch (error) {
@@ -42,9 +42,9 @@ function UserLogin() {
             <form className="login-form" onSubmit={handleSubmit}>
                 <input
                     type="text"
-                    placeholder="Aadhaar No."
-                    value={aadhaar}
-                    onChange={(e) => setAadhaar(e.target.value)}
+                    placeholder="Email Address"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     required
                 />
                 <input
