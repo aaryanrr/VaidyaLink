@@ -1,42 +1,52 @@
-import React, {useState} from 'react';
-import './css/UserLogin.css';
-import logo from '../assets/Logo.png';
-import {useNavigate} from "react-router-dom";
+import React, {useState, useEffect} from 'react';
+import {useNavigate} from 'react-router-dom';
+
+const validateToken = async (token) => {
+    const response = await fetch('/api/users/validate-token', {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+        },
+    });
+    return response.ok;
+};
 
 function UserLogin() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
-    const [successMessage, setSuccessMessage] = useState('');
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            validateToken(token).then(isValid => {
+                if (isValid) navigate('/user-dashboard');
+            });
+        }
+    }, [navigate]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
             const response = await fetch('/api/users/login', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({email, password}),
             });
-
             if (response.ok) {
-                const data = await response.json();
-                setSuccessMessage('Login successful!');
-                setErrorMessage('');
-                localStorage.setItem('token', data.token);
-                navigate("/user-dashboard")
+                const {token} = await response.json();
+                localStorage.setItem('token', token);
+                navigate('/user-dashboard');
             } else {
-                const errorData = await response.json();
-                setErrorMessage(errorData.message || 'Invalid email or password.');
-                setSuccessMessage('');
+                setErrorMessage('Invalid email or password.');
             }
         } catch (error) {
-            setErrorMessage('Error: ' + error.message);
-            setSuccessMessage('');
+            setErrorMessage(`Error: ${error.message}`);
         }
     };
+
 
     return (
         <div className="login-container">
