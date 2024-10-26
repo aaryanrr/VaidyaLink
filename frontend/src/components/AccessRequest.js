@@ -23,7 +23,7 @@ const AccessRequest = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch('/api/access-request', {
+            const response = await fetch('/api/access-requests/request', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
