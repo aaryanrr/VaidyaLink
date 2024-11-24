@@ -16,6 +16,7 @@ const Home = () => {
                 <div className="home-buttons">
                     <Link to="/institution" className="button">Institutions</Link>
                     <Link to="/users" className="button">Users</Link>
+                    <Link to="/about" className="button">About Us</Link>
                 </div>
             </main>
             <footer className="home-footer">
