@@ -1,7 +1,7 @@
 import React from 'react';
-import './css/InstitutionDashboard.css';
+import '../css/InstitutionDashboard.css';
 import {Link, useNavigate} from 'react-router-dom';
-import logo from '../assets/Logo.png';
+import logo from '../../assets/Logo.png';
 
 const InstitutionDashboard = () => {
     const navigate = useNavigate();

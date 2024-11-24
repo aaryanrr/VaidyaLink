@@ -1,17 +1,17 @@
 import React from 'react';
 import {BrowserRouter as Router, Route, Routes} from 'react-router-dom';
 import Home from './components/Home';
-import Institution from './components/InstitutionLogin';
-import Users from './components/UserLogin';
+import Institution from './components/institution/InstitutionLogin';
+import Users from './components/user/UserLogin';
 import About from './components/About';
-import SignUp from './components/InstitutionSignUp';
-import InstitutionSignUp from './components/InstitutionSignUp';
+import SignUp from './components/institution/InstitutionSignUp';
+import InstitutionSignUp from './components/institution/InstitutionSignUp';
 import NotFound from './components/NotFound';
-import InstitutionDashboard from './components/InstitutionDashboard';
-import UserDashboard from './components/UserDashboard';
+import InstitutionDashboard from './components/institution/InstitutionDashboard';
+import UserDashboard from './components/user/UserDashboard';
 import PrivateRoute from './components/PrivateRoute';
-import InviteUser from './components/InviteUser';
-import AccessRequest from './components/AccessRequest';
+import InviteUser from './components/institution/InviteUser';
+import AccessRequest from './components/institution/AccessRequest';
 
 function App() {
     return (

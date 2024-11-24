@@ -1,6 +1,6 @@
 import React from 'react';
-import './css/UserDashboard.css';
-import logo from '../assets/Logo.png';
+import '../css/UserDashboard.css';
+import logo from '../../assets/Logo.png';
 import {useNavigate} from 'react-router-dom';
 
 const UserDashboard = () => {

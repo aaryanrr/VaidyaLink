@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {useNavigate} from 'react-router-dom';
-import './css/AccessRequest.css';
-import logo from '../assets/Logo.png';
+import '../css/AccessRequest.css';
+import logo from '../../assets/Logo.png';
 
 const AccessRequest = () => {
     const [aadhaar, setAadhaar] = useState('');
