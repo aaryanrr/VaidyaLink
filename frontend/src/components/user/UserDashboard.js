@@ -1,10 +1,13 @@
 import React from 'react';
+import {useNavigate} from 'react-router-dom';
+
 import '../css/UserDashboard.css';
 import logo from '../../assets/Logo.png';
-import {useNavigate} from 'react-router-dom';
+import {UserRedirectToHome} from "../Utils";
 
 const UserDashboard = () => {
     const navigate = useNavigate();
+    const toHome = UserRedirectToHome();
 
     const handleNavigation = (path) => {
         if (path === '/users') {
@@ -34,7 +37,7 @@ const UserDashboard = () => {
 
     return (
         <div className="dashboard-container">
-            <img src={logo} alt="VaidyaLink Logo" className="dashboard-logo"/>
+            <img src={logo} alt="VaidyaLink Logo" className="dashboard-logo" onClick={toHome}/>
             <h1 className="dashboard-title">User Dashboard</h1>
             <div className="dashboard-options">
                 <div className="dashboard-option" onClick={() => handleNavigation('/current-access')}>

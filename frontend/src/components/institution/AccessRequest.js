@@ -1,7 +1,9 @@
 import React, {useState} from 'react';
 import {useNavigate} from 'react-router-dom';
+
 import '../css/AccessRequest.css';
 import logo from '../../assets/Logo.png';
+import {UserRedirectToHome} from "../Utils";
 
 const AccessRequest = () => {
     const [aadhaar, setAadhaar] = useState('');
@@ -9,6 +11,7 @@ const AccessRequest = () => {
     const [timePeriod, setTimePeriod] = useState('');
     const [actionRequired, setActionRequired] = useState([]);
     const navigate = useNavigate();
+    const toHome = UserRedirectToHome();
 
     const handleDataCategoryChange = (e) => {
         const options = Array.from(e.target.selectedOptions, option => option.value);
@@ -51,7 +54,7 @@ const AccessRequest = () => {
 
     return (
         <div className="access-request-container">
-            <img src={logo} alt="VaidyaLink Logo" className="access-request-logo"/>
+            <img src={logo} alt="VaidyaLink Logo" className="access-request-logo" onClick={toHome}/>
             <h1>Access Request</h1>
             <form className="access-request-form" onSubmit={handleSubmit}>
                 <label>Patient's Aadhaar No.:</label>

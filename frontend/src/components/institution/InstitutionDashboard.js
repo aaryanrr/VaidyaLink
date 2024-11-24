@@ -1,10 +1,13 @@
 import React from 'react';
-import '../css/InstitutionDashboard.css';
 import {Link, useNavigate} from 'react-router-dom';
+
+import '../css/InstitutionDashboard.css';
 import logo from '../../assets/Logo.png';
+import {UserRedirectToHome} from "../Utils";
 
 const InstitutionDashboard = () => {
     const navigate = useNavigate();
+    const toHome = UserRedirectToHome(navigate);
     const handleLogout = async () => {
         const token = localStorage.getItem('token');
 
@@ -29,7 +32,7 @@ const InstitutionDashboard = () => {
     return (
         <div className="dashboard-container">
             <header className="dashboard-header">
-                <img src={logo} alt="VaidyaLink Logo" className="dashboard-logo"/>
+                <img src={logo} alt="VaidyaLink Logo" className="dashboard-logo" onClick={toHome}/>
                 <h1>Institution Dashboard</h1>
             </header>
 

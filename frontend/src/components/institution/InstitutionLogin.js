@@ -1,7 +1,9 @@
 import React, {useState, useEffect} from 'react';
 import {useNavigate, Link} from 'react-router-dom';
+
 import '../css/InstitutionLogin.css';
 import logo from '../../assets/Logo.png';
+import {UserRedirectToHome} from "../Utils";
 
 const validateToken = async (token) => {
     const response = await fetch('/api/institutions/validate-token', {
@@ -20,6 +22,7 @@ function InstitutionLogin() {
     const [errorMessage, setErrorMessage] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
     const navigate = useNavigate();
+    const toHome = UserRedirectToHome();
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -61,7 +64,7 @@ function InstitutionLogin() {
     return (
         <div className="institution-container">
             <div className="institution-header">
-                <img src={logo} alt="Logo" className="institution-logo"/>
+                <img src={logo} alt="Logo" className="institution-logo" onClick={toHome}/>
                 <h1>Institution Login</h1>
             </div>
             <form className="institution-form" onSubmit={handleSubmit}>

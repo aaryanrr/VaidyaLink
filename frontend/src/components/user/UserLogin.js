@@ -1,7 +1,9 @@
 import React, {useState, useEffect} from 'react';
 import {useNavigate} from 'react-router-dom';
+
 import logo from '../../assets/Logo.png';
 import '../css/UserLogin.css';
+import {UserRedirectToHome} from "../Utils";
 
 
 const validateToken = async (token) => {
@@ -21,6 +23,7 @@ function UserLogin() {
     const [errorMessage, setErrorMessage] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
     const navigate = useNavigate();
+    const toHome = UserRedirectToHome();
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -55,7 +58,7 @@ function UserLogin() {
 
     return (
         <div className="login-container">
-            <img src={logo} alt="VaidyaLink Logo" className="login-logo"/>
+            <img src={logo} alt="VaidyaLink Logo" className="login-logo" onClick={toHome}/>
             <h1>User Login</h1>
             <form className="login-form" onSubmit={handleSubmit}>
                 <input

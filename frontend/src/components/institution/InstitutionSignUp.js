@@ -1,6 +1,8 @@
 import React, {useState} from 'react';
+
 import '../css/InstitutionSignUp.css';
 import logo from '../../assets/Logo.png';
+import {UserRedirectToHome} from "../Utils";
 
 function InstitutionSignUp() {
     const [email, setEmail] = useState('');
@@ -8,6 +10,7 @@ function InstitutionSignUp() {
     const [licenseFile, setLicenseFile] = useState(null);
     const [errorMessage, setErrorMessage] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
+    const toHome = UserRedirectToHome();
 
     const handleFileChange = (e) => {
         setLicenseFile(e.target.files[0]);
@@ -49,7 +52,7 @@ function InstitutionSignUp() {
 
     return (
         <div className="signup-container">
-            <img src={logo} alt="VaidyaLink Logo" className="signup-logo"/>
+            <img src={logo} alt="VaidyaLink Logo" className="signup-logo" onClick={toHome}/>
             <h1>Institution Sign Up</h1>
             <form className="signup-form" onSubmit={handleSubmit}>
                 <input
