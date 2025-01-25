@@ -1,3 +1,3 @@
 # VaidyaLink
 
-Blokchain based secure storage for Medical data
+Blockchain-based secure storage for Medical data
