@@ -35,7 +35,7 @@ public class MailgunService {
         form.add("from", fromEmail);
         form.add("to", recipient);
         form.add("subject", subject);
-        form.add("text", "Welcome to VaidyaLink! Your temporary password for login is: " + password);
+        form.add("text", "Thank you for registering on VaidyaLink 🙌. Your temporary password for login is: " + password);
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(form, headers);
         restTemplate.exchange(mailgunUrl, HttpMethod.POST, request, String.class);

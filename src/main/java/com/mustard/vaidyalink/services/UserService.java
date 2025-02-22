@@ -47,7 +47,7 @@ public class UserService {
 
         User savedUser = userRepository.save(user);
         if (savedUser.getId() != null) {
-            mailgunService.sendPasswordEmail(email, "Your Temporary Password", rawPassword);
+            mailgunService.sendPasswordEmail(email, "VaidyaLink Login Password", rawPassword);
         } else {
             throw new RuntimeException("Failed to save user to the database.");
         }
