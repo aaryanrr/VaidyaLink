@@ -66,7 +66,7 @@ public class UserService {
 
     private String generateRandomPassword() {
         SecureRandom secureRandom = new SecureRandom();
-        String allowedChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_+=<>?";
+        String allowedChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*-_+=";
         StringBuilder password = new StringBuilder(12);
 
         for (int i = 0; i < 12; i++) {
