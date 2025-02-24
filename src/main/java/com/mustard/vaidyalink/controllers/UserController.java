@@ -29,13 +29,6 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@RequestParam String aadhaar, @RequestParam String password) {
-        String aadhaarHash = hashAadhaar(aadhaar);
-        userService.registerUser(aadhaarHash, password);
-        return ResponseEntity.ok("User registered successfully!");
-    }
-
     @PostMapping("/invite")
     public ResponseEntity<String> inviteUser(@RequestBody InviteRequest inviteRequest) {
         String aadhaarHash = hashAadhaar(inviteRequest.getAadhaar());

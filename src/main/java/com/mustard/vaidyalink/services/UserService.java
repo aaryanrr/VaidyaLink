@@ -70,13 +70,6 @@ public class UserService {
         return false;
     }
 
-    public void registerUser(String aadhaarNumberHash, String rawPassword) {
-        User user = new User();
-        user.setAadhaarNumberHash(aadhaarNumberHash);
-        user.setPassword(passwordEncoder.encode(rawPassword));
-        userRepository.save(user);
-    }
-
     public Optional<User> findByAadhaarNumberHash(String aadhaarNumberHash) {
         return userRepository.findByAadhaarNumberHash(aadhaarNumberHash);
     }
