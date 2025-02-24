@@ -76,19 +76,19 @@ textarea {
 }
 
 .invite-button,
-.back-button {
+.back-invite-button {
     padding: 10px 30px;
     background-color: var(--accent-color);
     border: none;
     border-radius: 8px;
-    color: var(--text-color);
+    color: var(--primary-bg);
     font-size: 1.2rem;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
 
 .invite-button:hover,
-.back-button:hover {
+.back-invite-button:hover {
     background-color: #9e63f9;
 }
 

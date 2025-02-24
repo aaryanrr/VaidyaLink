@@ -184,7 +184,7 @@ const InviteUser = () => {
                     <button type="submit" className="invite-button">Invite</button>
                     <button
                         type="button"
-                        className="back-button"
+                        className="back-invite-button"
                         onClick={() => navigate('/institution-dashboard')}
                     >
                         Back

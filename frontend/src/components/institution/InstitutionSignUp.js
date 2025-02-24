@@ -82,7 +82,7 @@ function InstitutionSignUp() {
             {successMessage && <p className="success-message">{successMessage}</p>}
             {errorMessage && <p className="error-message">{errorMessage}</p>}
 
-            <p>Already have an account? <a href="/institution">Login</a></p>
+            <p>Already have an account? <a href="/institution" className="already-signed-up">Login</a></p>
             <footer className="signup-footer">
                 &copy; Copyright 2024 | VaidyaLink
             </footer>
