@@ -26,10 +26,11 @@ public class InstitutionController {
 
     @PostMapping("/register")
     public ResponseEntity<String> registerInstitution(
+            @RequestParam String institutionName,
             @RequestParam String email,
             @RequestParam String password,
             @RequestParam("licenseFile") MultipartFile licenseFile) {
-        institutionService.registerInstitution(email, password, licenseFile);
+        institutionService.registerInstitution(institutionName, email, password, licenseFile);
         return ResponseEntity.ok("Institution registered successfully!");
     }
 

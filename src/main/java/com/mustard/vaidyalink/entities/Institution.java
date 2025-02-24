@@ -17,6 +17,9 @@ public class Institution {
     @Column(name = "registration_number", nullable = false, length = 20)
     private String registrationNumber;
 
+    @Column(name = "institution_name", nullable = false)
+    private String institutionName;
+
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 

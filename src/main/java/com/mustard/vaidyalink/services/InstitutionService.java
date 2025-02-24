@@ -36,7 +36,7 @@ public class InstitutionService {
         this.jwtUtil = jwtUtil;
     }
 
-    public void registerInstitution(String email, String rawPassword, MultipartFile licenseFile) {
+    public void registerInstitution(String institutionName, String email, String rawPassword, MultipartFile licenseFile) {
         if (institutionRepository.findByEmail(email).isPresent()) {
             throw new IllegalArgumentException("Institution with this email already exists.");
         }
@@ -44,6 +44,7 @@ public class InstitutionService {
         String licenseFilePath = saveFile(licenseFile);
 
         Institution institution = new Institution();
+        institution.setInstitutionName(institutionName);
         institution.setEmail(email);
         institution.setPassword(passwordEncoder.encode(rawPassword));
         institution.setLicenseFilePath(licenseFilePath);

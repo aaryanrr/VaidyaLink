@@ -21,6 +21,7 @@ CREATE TABLE users
 CREATE TABLE institutions
 (
     registration_number VARCHAR(20) PRIMARY KEY,
+    institution_name    VARCHAR(255) NOT NULL,
     email               VARCHAR(255) NOT NULL UNIQUE,
     password            VARCHAR(255) NOT NULL,
     license_file_path   VARCHAR(255) NOT NULL,

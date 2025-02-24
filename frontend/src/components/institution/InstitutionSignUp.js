@@ -5,6 +5,7 @@ import logo from '../../assets/Logo.png';
 import {UserRedirectToHome} from "../Utils";
 
 function InstitutionSignUp() {
+    const [institutionName, setInstitutionName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [licenseFile, setLicenseFile] = useState(null);
@@ -19,6 +20,7 @@ function InstitutionSignUp() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const formData = new FormData();
+        formData.append('institutionName', institutionName);
         formData.append('email', email);
         formData.append('password', password);
         formData.append('licenseFile', licenseFile);
@@ -55,6 +57,13 @@ function InstitutionSignUp() {
             <img src={logo} alt="VaidyaLink Logo" className="signup-logo" onClick={toHome}/>
             <h1>Institution Sign Up</h1>
             <form className="signup-form" onSubmit={handleSubmit}>
+                <input
+                    type="text"
+                    placeholder="Institution Name"
+                    value={institutionName}
+                    onChange={(e) => setInstitutionName(e.target.value)}
+                    required
+                />
                 <input
                     type="email"
                     placeholder="Email Address"
