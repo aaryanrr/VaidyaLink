@@ -2,17 +2,12 @@ package com.mustard.vaidyalink.controllers;
 
 import com.mustard.vaidyalink.dtos.InviteRequest;
 import com.mustard.vaidyalink.entities.User;
-import com.mustard.vaidyalink.services.MyUserDetailsService;
 import com.mustard.vaidyalink.services.UserService;
-import com.mustard.vaidyalink.services.TokenService;
 import com.mustard.vaidyalink.utils.JwtUtil;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.charset.StandardCharsets;
@@ -26,18 +21,12 @@ import java.util.Optional;
 @RequestMapping("/api/users")
 public class UserController {
 
-    private final AuthenticationManager authenticationManager;
-    private final MyUserDetailsService userDetailsService;
     private final JwtUtil jwtUtil;
     private final UserService userService;
-    private final TokenService tokenService;
 
-    public UserController(AuthenticationManager authenticationManager, MyUserDetailsService userDetailsService, JwtUtil jwtUtil, UserService userService, TokenService tokenService) {
-        this.authenticationManager = authenticationManager;
-        this.userDetailsService = userDetailsService;
+    public UserController(JwtUtil jwtUtil, UserService userService) {
         this.jwtUtil = jwtUtil;
         this.userService = userService;
-        this.tokenService = tokenService;
     }
 
     @PostMapping("/register")
@@ -77,26 +66,14 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Map<String, String> loginData) {
-        String email = loginData.get("email");
-        String password = loginData.get("password");
-
-        try {
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(email, password)
-            );
-        } catch (AuthenticationException e) {
-            return ResponseEntity.status(401).body("Invalid email or password.");
+    public ResponseEntity<?> login(@RequestBody LoginRequestUser loginRequestUser) {
+        boolean success = userService.login(loginRequestUser.getEmail(), loginRequestUser.getPassword());
+        if (success) {
+            String token = jwtUtil.generateToken(loginRequestUser.getEmail());
+            return ResponseEntity.ok(Map.of("token", token));
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid email or password.");
         }
-
-        UserDetails userDetails = userDetailsService.loadUserByUsername(email);
-        String jwt = jwtUtil.generateToken(userDetails.getUsername());
-
-        User user = userService.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
-        tokenService.saveToken(user, jwt);
-
-        return ResponseEntity.ok(Map.of("token", jwt));
     }
 
     @PostMapping("/validate-token")
@@ -138,5 +115,12 @@ public class UserController {
             hexString.append(hex);
         }
         return hexString.toString();
+    }
+
+    @Setter
+    @Getter
+    public static class LoginRequestUser {
+        private String email;
+        private String password;
     }
 }
