@@ -1,7 +1,11 @@
 package com.mustard.vaidyalink.filters;
 
-import com.mustard.vaidyalink.utils.JwtUtil;
 import com.mustard.vaidyalink.services.MyUserDetailsService;
+import com.mustard.vaidyalink.utils.JwtUtil;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -11,18 +15,27 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.util.List;
 
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
 
     private final MyUserDetailsService myUserDetailsService;
     private final JwtUtil jwtUtil;
+
+    private static final List<String> FILTERED_ENDPOINTS = List.of(
+            "/api/users/find",
+            "/api/users/invite",
+            "/api/users/logout",
+            "/api/users/validate-token",
+            "/api/institutions/dashboard",
+            "/api/institutions/find",
+            "/api/institutions/logout",
+            "/api/institutions/validate-token",
+            "/api/access-requests/request"
+    );
 
     @Autowired
     public JwtRequestFilter(MyUserDetailsService myUserDetailsService, JwtUtil jwtUtil) {
@@ -31,7 +44,16 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain chain)
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String path = request.getServletPath();
+        boolean requiresFilter = FILTERED_ENDPOINTS.stream().anyMatch(path::startsWith);
+        return !requiresFilter;
+    }
+
+    @Override
+    protected void doFilterInternal(@NonNull HttpServletRequest request,
+                                    @NonNull HttpServletResponse response,
+                                    @NonNull FilterChain chain)
             throws ServletException, IOException {
 
         final String authorizationHeader = request.getHeader("Authorization");
@@ -50,7 +72,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             try {
                 UserDetails userDetails = this.myUserDetailsService.loadUserByUsername(username);
-
                 if (jwtUtil.validateToken(jwt, userDetails.getUsername())) {
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                             userDetails, null, userDetails.getAuthorities());
