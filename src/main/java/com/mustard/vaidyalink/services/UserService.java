@@ -5,6 +5,7 @@ import com.mustard.vaidyalink.entities.User;
 import com.mustard.vaidyalink.repositories.UserRepository;
 import com.mustard.vaidyalink.repositories.TokenRepository;
 import com.mustard.vaidyalink.utils.JwtUtil;
+import com.mustard.vaidyalink.utils.EncryptionUtil;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -36,17 +37,17 @@ public class UserService {
         String encodedPassword = passwordEncoder.encode(rawPassword);
 
         User user = new User();
-        user.setName(name);
+        user.setName(EncryptionUtil.encryptDecryptString("encrypt", name, rawPassword));
         user.setEmail(email);
         user.setAadhaarNumberHash(aadhaarNumberHash);
-        user.setPhoneNumber(phoneNumber);
-        user.setDateOfBirth(dateOfBirth);
-        user.setAddress(address);
-        user.setBloodGroup(bloodGroup);
-        user.setEmergencyContact(emergencyContact);
-        user.setAllergies(allergies);
-        user.setHeightCm(heightCm);
-        user.setWeightKg(weightKg);
+        user.setPhoneNumber(EncryptionUtil.encryptDecryptString("encrypt", phoneNumber, rawPassword));
+        user.setDateOfBirth(EncryptionUtil.encryptDecryptDate("encrypt", dateOfBirth, rawPassword));
+        user.setAddress(EncryptionUtil.encryptDecryptString("encrypt", address, rawPassword));
+        user.setBloodGroup(EncryptionUtil.encryptDecryptString("encrypt", bloodGroup, rawPassword));
+        user.setEmergencyContact(EncryptionUtil.encryptDecryptString("encrypt", emergencyContact, rawPassword));
+        user.setAllergies(EncryptionUtil.encryptDecryptString("encrypt", allergies, rawPassword));
+        user.setHeightCm(EncryptionUtil.encryptDecryptDouble("encrypt", heightCm, rawPassword));
+        user.setWeightKg(EncryptionUtil.encryptDecryptDouble("encrypt", weightKg, rawPassword));
         user.setPassword(encodedPassword);
 
         User savedUser = userRepository.save(user);
