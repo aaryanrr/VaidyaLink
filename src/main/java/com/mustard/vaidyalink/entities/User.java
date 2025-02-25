@@ -34,28 +34,28 @@ public class User {
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
-    @Column(name = "phone_number")
+    @Column(name = "phone_number", nullable = false)
     private String phoneNumber;
 
-    @Column(name = "date_of_birth")
+    @Column(name = "date_of_birth", nullable = false)
     private LocalDate dateOfBirth;
 
-    @Column(name = "address")
+    @Column(name = "address", nullable = false)
     private String address;
 
-    @Column(name = "blood_group")
+    @Column(name = "blood_group", nullable = false)
     private String bloodGroup;
 
-    @Column(name = "emergency_contact")
+    @Column(name = "emergency_contact", nullable = false)
     private String emergencyContact;
 
-    @Column(name = "allergies")
+    @Column(name = "allergies", nullable = false)
     private String allergies;
 
-    @Column(name = "height_cm", precision = 5)
+    @Column(name = "height_cm", precision = 5, nullable = false)
     private Double heightCm;
 
-    @Column(name = "weight_kg", precision = 5)
+    @Column(name = "weight_kg", precision = 5, nullable = false)
     private Double weightKg;
 
     @Column(name = "created_at", nullable = false, updatable = false)
