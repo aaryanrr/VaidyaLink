@@ -100,8 +100,7 @@ public class UserService {
     }
 
     public boolean isTokenValid(String token) {
-        Optional<Token> tokenEntity = tokenRepository.findByToken(token);
-        return tokenEntity.isPresent() && tokenEntity.get().getExpiryDate().isAfter(LocalDate.now().atStartOfDay());
+        return tokenRepository.existsByTokenAndUserIsNotNullAndInstitutionIsNull(token);
     }
 
     public boolean invalidateToken(String token) {

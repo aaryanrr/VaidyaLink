@@ -103,8 +103,7 @@ public class InstitutionService {
     }
 
     public boolean validateToken(String token) {
-        Optional<Token> tokenOptional = tokenRepository.findByToken(token);
-        return tokenOptional.isPresent() && !tokenOptional.get().getExpiryDate().isBefore(LocalDateTime.now());
+        return tokenRepository.existsByTokenAndInstitutionIsNotNullAndUserIsNull(token);
     }
 
     public boolean invalidateToken(String token) {

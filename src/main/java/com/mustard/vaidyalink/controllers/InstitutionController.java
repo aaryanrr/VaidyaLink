@@ -80,7 +80,8 @@ public class InstitutionController {
     public ResponseEntity<Boolean> validateToken(@RequestHeader("Authorization") String token) {
         String jwtToken = token.startsWith("Bearer ") ? token.substring(7) : token;
         boolean isValid = institutionService.validateToken(jwtToken);
-        return ResponseEntity.ok(isValid);
+        System.out.println("Token is valid: " + isValid + " " + token);
+        return isValid ? ResponseEntity.ok(true) : ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(false);
     }
 
     @Setter
