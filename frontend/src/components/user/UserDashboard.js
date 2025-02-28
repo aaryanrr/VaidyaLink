@@ -40,10 +40,6 @@ const UserDashboard = () => {
             <img src={logo} alt="VaidyaLink Logo" className="dashboard-logo" onClick={toHome}/>
             <h1 className="dashboard-title">User Dashboard</h1>
             <div className="dashboard-options">
-                <div className="dashboard-option" onClick={() => handleNavigation('/current-access')}>
-                    <span>Current access</span>
-                    <span className="arrow">→</span>
-                </div>
                 <div className="dashboard-option" onClick={() => handleNavigation('/access-history')}>
                     <span>Access history</span>
                     <span className="arrow">→</span>
