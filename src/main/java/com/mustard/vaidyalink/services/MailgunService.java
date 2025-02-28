@@ -23,11 +23,27 @@ public class MailgunService {
     private String fromEmail;
 
     private final RestTemplate restTemplate = new RestTemplate();
+    HttpHeaders headers = new HttpHeaders();
 
     public void sendPasswordEmail(String recipient, String subject, String password) {
         String mailgunUrl = "https://api.mailgun.net/v3/" + domain + "/messages";
 
-        HttpHeaders headers = new HttpHeaders();
+        MultiValueMap<String, String> form = basicFormat(recipient, subject);
+        form.add("text", "Thank you for registering on VaidyaLink 🙌. Your temporary password for login is: " + password);
+
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(form, headers);
+        restTemplate.exchange(mailgunUrl, HttpMethod.POST, request, String.class);
+    }
+
+    public void sendEmail(String recipient, String subject, String body) {
+        MultiValueMap<String, String> form = basicFormat(recipient, subject);
+        form.add("text", body);
+
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(form, headers);
+        restTemplate.exchange("https://api.mailgun.net/v3/" + domain + "/messages", HttpMethod.POST, request, String.class);
+    }
+
+    private MultiValueMap<String, String> basicFormat(String recipient, String subject) {
         headers.setBasicAuth("api", apiKey);
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
@@ -35,9 +51,7 @@ public class MailgunService {
         form.add("from", fromEmail);
         form.add("to", recipient);
         form.add("subject", subject);
-        form.add("text", "Thank you for registering on VaidyaLink 🙌. Your temporary password for login is: " + password);
 
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(form, headers);
-        restTemplate.exchange(mailgunUrl, HttpMethod.POST, request, String.class);
+        return form;
     }
 }
