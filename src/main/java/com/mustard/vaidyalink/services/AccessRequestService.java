@@ -39,33 +39,10 @@ public class AccessRequestService {
             accessRequest.setTimePeriod(requestDto.getTimePeriod());
             accessRequest.setActionRequired(String.join(", ", requestDto.getActionRequired()));
             accessRequest.setApproved(false);
+//            accessRequestRepository.save(accessRequest);
 
-            accessRequestRepository.save(accessRequest);
+            generateAccessEmail(accessRequest, institutionName, institutionRegNum, requestDto, user);
 
-            String emailBody = String.format(
-                    """
-                            Dear %s,
-                            
-                            An access request has been made by %s (Reg. No: %s) with the following details:
-                            
-                            Data Category: %s
-                            Time Period: %s
-                            Action Required: %s
-                            
-                            Please click the following link to approve or deny this request:
-                            http://localhost:8080/api/access-requests/approve?id=%s
-                            
-                            Sincerely,
-                            VaidyaLink Team""",
-                    user.getName(),
-                    institutionName,
-                    institutionRegNum,
-                    String.join(", ", requestDto.getDataCategory()),
-                    requestDto.getTimePeriod(),
-                    String.join(", ", requestDto.getActionRequired()),
-                    accessRequest.getId()
-            );
-            mailgunService.sendEmail(user.getEmail(), "VaidyaLink Access Request Notification", emailBody);
         } else {
             throw new IllegalArgumentException("User with provided Aadhaar Number not Found!");
         }
@@ -80,6 +57,34 @@ public class AccessRequestService {
         } else {
             throw new IllegalArgumentException("Access Request with provided ID not Found!");
         }
+    }
+
+    private void generateAccessEmail(AccessRequest accessRequest, String institutionName, String institutionRegNum, AccessRequestDto requestDto, User user) {
+        String emailBody = String.format(
+                """
+                        Dear %s,
+                        
+                        An access request has been made by %s (Reg. No: %s) with the following details:
+                        
+                        Data Category: %s
+                        Time Period: %s
+                        Action Required: %s
+                        
+                        Please click the following link to approve or deny this request:
+                        http://localhost:8080/api/access-requests/approve?id=%s
+                        
+                        Sincerely,
+                        VaidyaLink Team""",
+                user.getName(),
+                institutionName,
+                institutionRegNum,
+                String.join(", ", requestDto.getDataCategory()),
+                requestDto.getTimePeriod(),
+                String.join(", ", requestDto.getActionRequired()),
+                accessRequest.getId()
+        );
+        mailgunService.sendEmail(user.getEmail(), "VaidyaLink Access Request Notification", emailBody);
+
     }
 
     private String hashAadhaar(String aadhaar) {
