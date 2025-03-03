@@ -88,6 +88,8 @@ public class InstitutionService {
         }
     }
 
+    //TODO: Derive a better and secure way to generate registration number
+    //TODO: Check for duplicates in the registration number
     private String generateRegistrationNumber() {
         Random random = new Random();
         int randomNum = 100000 + random.nextInt(900000);
