@@ -62,11 +62,6 @@ services:
     command: ganache-cli -p 8545 -h 0.0.0.0 -m "vaidyalink"
     ports:
       - "8545:8545"
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8545" ]
-      interval: 30s
-      retries: 3
-      timeout: 10s
     networks:
       - app-network
 
