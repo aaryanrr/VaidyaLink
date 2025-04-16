@@ -55,7 +55,7 @@ public class SecurityConfig {
                     return corsConfiguration;
                 }))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/static/**", "/favicon.ico", "/api/users/login", "/api/institutions/login", "/api/users/register", "/api/institutions/register", "/api/status", "/api/access-requests/approve").permitAll()
+                        .requestMatchers("/", "/static/**", "/favicon.ico", "/api/users/login", "/api/institutions/login", "/api/institutions/register", "/api/status", "/api/access-requests/approve", "/api/users/records").permitAll()
                         .requestMatchers("/api/users/invite").authenticated() // Ensure invite endpoint requires authentication
                         .anyRequest().authenticated()
                 )
