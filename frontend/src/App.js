@@ -12,6 +12,7 @@ import UserDashboard from './components/user/UserDashboard';
 import PrivateRoute from './components/PrivateRoute';
 import InviteUser from './components/institution/InviteUser';
 import AccessRequest from './components/institution/AccessRequest';
+import ViewRecords from './components/user/ViewRecords';
 
 function App() {
     return (
@@ -53,6 +54,14 @@ function App() {
                         element={
                             <PrivateRoute>
                                 <AccessRequest/>
+                            </PrivateRoute>
+                        }
+                    />
+                    <Route
+                        path="/view-records"
+                        element={
+                            <PrivateRoute>
+                                <ViewRecords/>
                             </PrivateRoute>
                         }
                     />
