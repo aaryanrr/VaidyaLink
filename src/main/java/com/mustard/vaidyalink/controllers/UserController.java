@@ -69,6 +69,30 @@ public class UserController {
         }
     }
 
+    @GetMapping("/records")
+    public ResponseEntity<?> getUserRecords(@RequestHeader("Authorization") String token) {
+        token = token.replace("Bearer ", "").trim();
+        String email = jwtUtil.extractUsername(token);
+        Optional<User> user = userService.findByEmail(email);
+
+        if (user.isPresent()) {
+            Map<String, Object> userRecords = Map.of(
+                    "email", user.get().getEmail(),
+                    "phoneNumber", user.get().getPhoneNumber(),
+                    "dateOfBirth", user.get().getDateOfBirth(),
+                    "address", user.get().getAddress(),
+                    "bloodGroup", user.get().getBloodGroup(),
+                    "emergencyContact", user.get().getEmergencyContact(),
+                    "allergies", user.get().getAllergies(),
+                    "heightCm", user.get().getHeightCm(),
+                    "weightKg", user.get().getWeightKg()
+            );
+            return ResponseEntity.ok(userRecords);
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token.");
+        }
+    }
+
     @PostMapping("/validate-token")
     public ResponseEntity<?> validateToken(@RequestHeader("Authorization") String token) {
         token = token.replace("Bearer ", "").trim();
