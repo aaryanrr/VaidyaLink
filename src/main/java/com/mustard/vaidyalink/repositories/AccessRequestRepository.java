@@ -6,8 +6,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 import java.util.UUID;
+import java.util.List;
 
 public interface AccessRequestRepository extends JpaRepository<AccessRequest, UUID> {
 
     @NotNull Optional<AccessRequest> findById(@NotNull UUID id);
+
+    List<AccessRequest> findAllByAadhaarNumber(String aadhaarNumber);
 }

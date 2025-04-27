@@ -12,6 +12,7 @@ import java.security.NoSuchAlgorithmException;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import java.util.Optional;
+import java.util.List;
 
 @Service
 public class AccessRequestService {
@@ -46,6 +47,10 @@ public class AccessRequestService {
         } else {
             throw new IllegalArgumentException("User with provided Aadhaar Number not Found!");
         }
+    }
+
+    public List<AccessRequest> getAccessRequestsByAadhaarHash(String aadhaarHash) {
+        return accessRequestRepository.findAllByAadhaarNumber(aadhaarHash);
     }
 
     public void approveAccessRequest(UUID id) {
