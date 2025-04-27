@@ -4,6 +4,7 @@ import com.mustard.vaidyalink.dtos.InviteRequest;
 import com.mustard.vaidyalink.entities.User;
 import com.mustard.vaidyalink.services.UserService;
 import com.mustard.vaidyalink.utils.JwtUtil;
+import com.mustard.vaidyalink.utils.EncryptionUtil;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.http.HttpStatus;
@@ -70,22 +71,24 @@ public class UserController {
     }
 
     @GetMapping("/records")
-    public ResponseEntity<?> getUserRecords(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<?> getUserRecords(@RequestHeader("Authorization") String token,
+                                            @RequestHeader("X-Password") String encodedPassword) {
         token = token.replace("Bearer ", "").trim();
         String email = jwtUtil.extractUsername(token);
         Optional<User> user = userService.findByEmail(email);
 
         if (user.isPresent()) {
+            String password = new String(java.util.Base64.getDecoder().decode(encodedPassword));
             Map<String, Object> userRecords = Map.of(
                     "email", user.get().getEmail(),
-                    "phoneNumber", user.get().getPhoneNumber(),
-                    "dateOfBirth", user.get().getDateOfBirth(),
-                    "address", user.get().getAddress(),
-                    "bloodGroup", user.get().getBloodGroup(),
-                    "emergencyContact", user.get().getEmergencyContact(),
-                    "allergies", user.get().getAllergies(),
-                    "heightCm", user.get().getHeightCm(),
-                    "weightKg", user.get().getWeightKg()
+                    "phoneNumber", EncryptionUtil.encryptDecryptString("decrypt", user.get().getPhoneNumber(), password),
+                    "dateOfBirth", EncryptionUtil.encryptDecryptDate("decrypt", user.get().getDateOfBirth(), password),
+                    "address", EncryptionUtil.encryptDecryptString("decrypt", user.get().getAddress(), password),
+                    "bloodGroup", EncryptionUtil.encryptDecryptString("decrypt", user.get().getBloodGroup(), password),
+                    "emergencyContact", EncryptionUtil.encryptDecryptString("decrypt", user.get().getEmergencyContact(), password),
+                    "allergies", EncryptionUtil.encryptDecryptString("decrypt", user.get().getAllergies(), password),
+                    "heightCm", EncryptionUtil.encryptDecryptDouble("decrypt", user.get().getHeightCm(), password),
+                    "weightKg", EncryptionUtil.encryptDecryptDouble("decrypt", user.get().getWeightKg(), password)
             );
             return ResponseEntity.ok(userRecords);
         } else {
