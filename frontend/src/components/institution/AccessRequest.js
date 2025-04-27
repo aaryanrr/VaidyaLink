@@ -91,7 +91,7 @@ const AccessRequest = () => {
                 </div>
             </form>
             <footer className="access-request-footer">
-                &copy; Copyright 2024 | VaidyaLink
+                &copy; Copyright {new Date().getFullYear()} | VaidyaLink
             </footer>
         </div>
     );

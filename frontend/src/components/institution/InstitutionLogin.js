@@ -92,7 +92,7 @@ function InstitutionLogin() {
                 </p>
             </form>
             <footer className="institution-footer">
-                &copy; Copyright 2024 | VaidyaLink
+                &copy; Copyright {new Date().getFullYear()} | VaidyaLink
             </footer>
         </div>
     );

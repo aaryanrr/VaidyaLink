@@ -14,7 +14,7 @@ function NotFound() {
                 </Link>
             </div>
             <footer className="error-footer">
-                <p>© Copyright 2024 | VaidyaLink</p>
+                <p>© Copyright {new Date().getFullYear()} | VaidyaLink</p>
             </footer>
         </div>
     );

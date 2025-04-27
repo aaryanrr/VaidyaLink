@@ -82,7 +82,7 @@ function UserLogin() {
             {errorMessage && <p className="error-message">{errorMessage}</p>}
 
             <footer className="userlogin-footer">
-                &copy; Copyright 2024 | VaidyaLink
+                &copy; Copyright {new Date().getFullYear()} | VaidyaLink
             </footer>
         </div>
     );

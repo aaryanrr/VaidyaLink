@@ -20,7 +20,7 @@ const Home = () => {
                 </div>
             </main>
             <footer className="home-footer">
-                <p>© Copyright 2024 | VaidyaLink</p>
+                <p>© Copyright {new Date().getFullYear()} | VaidyaLink</p>
             </footer>
         </div>
     );

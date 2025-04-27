@@ -93,7 +93,7 @@ function InstitutionSignUp() {
 
             <p>Already have an account? <a href="/institution" className="already-signed-up">Login</a></p>
             <footer className="signup-footer">
-                &copy; Copyright 2024 | VaidyaLink
+                &copy; Copyright {new Date().getFullYear()} | VaidyaLink
             </footer>
         </div>
     );

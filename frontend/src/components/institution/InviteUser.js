@@ -194,7 +194,7 @@ const InviteUser = () => {
                 {errorMessage && <p className="error-message">{errorMessage}</p>}
 
                 <footer className="invite-user-footer">
-                    &copy; Copyright 2024 | VaidyaLink
+                    &copy; Copyright {new Date().getFullYear()} | VaidyaLink
                 </footer>
             </form>
         </div>
