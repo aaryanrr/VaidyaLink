@@ -38,7 +38,6 @@ public class AccessRequestService {
             accessRequest.setTimePeriod(requestDto.getTimePeriod());
             accessRequest.setActionRequired(String.join(", ", requestDto.getActionRequired()));
             accessRequest.setApproved(false);
-            // FIXME: ObjectOptimisticLockingFailureException is thrown when saving the entity
             accessRequestRepository.save(accessRequest);
 
             generateAccessEmail(accessRequest, institutionName, institutionRegNum, requestDto, user);
