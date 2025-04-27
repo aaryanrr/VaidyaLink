@@ -13,6 +13,7 @@ import PrivateRoute from './components/PrivateRoute';
 import InviteUser from './components/institution/InviteUser';
 import AccessRequest from './components/institution/AccessRequest';
 import ViewRecords from './components/user/ViewRecords';
+import AccessHistory from './components/user/AccessHistory';
 
 function App() {
     return (
@@ -62,6 +63,14 @@ function App() {
                         element={
                             <PrivateRoute>
                                 <ViewRecords/>
+                            </PrivateRoute>
+                        }
+                    />
+                    <Route
+                        path="/access-history"
+                        element={
+                            <PrivateRoute>
+                                <AccessHistory/>
                             </PrivateRoute>
                         }
                     />
