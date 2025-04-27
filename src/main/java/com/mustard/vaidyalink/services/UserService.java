@@ -6,6 +6,7 @@ import com.mustard.vaidyalink.repositories.UserRepository;
 import com.mustard.vaidyalink.repositories.TokenRepository;
 import com.mustard.vaidyalink.utils.JwtUtil;
 import com.mustard.vaidyalink.utils.EncryptionUtil;
+import com.mustard.vaidyalink.utils.PasswordUtil;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +34,7 @@ public class UserService {
 
     public void inviteUser(String name, String email, String aadhaarNumberHash, String phoneNumber, LocalDate dateOfBirth,
                            String address, String bloodGroup, String emergencyContact, String allergies, Double heightCm, Double weightKg) {
-        String rawPassword = generateRandomPassword();
+        String rawPassword = PasswordUtil.generateSecurePassword();
         String encodedPassword = passwordEncoder.encode(rawPassword);
 
         User user = new User();
@@ -74,19 +75,7 @@ public class UserService {
     public Optional<User> findByAadhaarNumberHash(String aadhaarNumberHash) {
         return userRepository.findByAadhaarNumberHash(aadhaarNumberHash);
     }
-
-    private String generateRandomPassword() {
-        SecureRandom secureRandom = new SecureRandom();
-        String allowedChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*-_+=";
-        StringBuilder password = new StringBuilder(12);
-
-        for (int i = 0; i < 12; i++) {
-            int randomIndex = secureRandom.nextInt(allowedChars.length());
-            password.append(allowedChars.charAt(randomIndex));
-        }
-        return password.toString();
-    }
-
+    
     public Optional<User> findByEmail(String email) {
         return userRepository.findByEmail(email);
     }
