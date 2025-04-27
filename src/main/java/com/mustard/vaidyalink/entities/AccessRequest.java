@@ -15,7 +15,8 @@ import java.util.UUID;
 public class AccessRequest {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(generator = "uuid2")
+    @Column(columnDefinition = "BINARY(16)")
     private UUID id;
 
     @Column(name = "aadhaar_number", nullable = false)

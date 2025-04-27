@@ -33,14 +33,13 @@ public class AccessRequestService {
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             AccessRequest accessRequest = new AccessRequest();
-            accessRequest.setId(UUID.randomUUID());
             accessRequest.setAadhaarNumber(hashedAadhaar);
             accessRequest.setDataCategory(String.join(", ", requestDto.getDataCategory()));
             accessRequest.setTimePeriod(requestDto.getTimePeriod());
             accessRequest.setActionRequired(String.join(", ", requestDto.getActionRequired()));
             accessRequest.setApproved(false);
             // FIXME: ObjectOptimisticLockingFailureException is thrown when saving the entity
-            // accessRequestRepository.save(accessRequest);
+            accessRequestRepository.save(accessRequest);
 
             generateAccessEmail(accessRequest, institutionName, institutionRegNum, requestDto, user);
 
