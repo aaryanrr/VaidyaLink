@@ -19,6 +19,9 @@ public class AccessRequest {
     @Column(columnDefinition = "BINARY(16)")
     private UUID id;
 
+    @Column(name = "institution_name", nullable = false)
+    private String institutionName;
+    
     @Column(name = "aadhaar_number", nullable = false)
     private String aadhaarNumber;
 

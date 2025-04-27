@@ -10,6 +10,7 @@ import java.util.List;
 @Getter
 public class AccessRequestDto {
     private String aadhaarNumber;
+    private String institutionName;
     private List<String> dataCategory;
     private LocalDate timePeriod;
     private List<String> actionRequired;

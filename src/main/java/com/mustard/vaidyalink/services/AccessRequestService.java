@@ -38,6 +38,7 @@ public class AccessRequestService {
             accessRequest.setTimePeriod(requestDto.getTimePeriod());
             accessRequest.setActionRequired(String.join(", ", requestDto.getActionRequired()));
             accessRequest.setApproved(false);
+            accessRequest.setInstitutionName(institutionName);
             accessRequestRepository.save(accessRequest);
 
             generateAccessEmail(accessRequest, institutionName, institutionRegNum, requestDto, user);
