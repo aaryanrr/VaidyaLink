@@ -1,8 +1,10 @@
 package com.mustard.vaidyalink.utils;
 
 import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
+import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.Arrays;
 import java.time.LocalDate;
@@ -11,6 +13,7 @@ import java.time.format.DateTimeFormatter;
 public class EncryptionUtil {
 
     private static final String ALGORITHM = "AES";
+    private static final String TRANSFORMATION = "AES/CBC/PKCS5Padding";
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     public static String encryptDecryptString(String mode, String data, String key) {
@@ -18,24 +21,36 @@ public class EncryptionUtil {
             byte[] keyBytes = key.getBytes(StandardCharsets.UTF_8);
             keyBytes = Arrays.copyOf(keyBytes, 16);
             SecretKeySpec secretKey = new SecretKeySpec(keyBytes, ALGORITHM);
-            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
 
             if (mode.equals("encrypt")) {
-                cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+                Cipher cipher = Cipher.getInstance(TRANSFORMATION);
+                byte[] iv = new byte[16];
+                SecureRandom random = new SecureRandom();
+                random.nextBytes(iv);
+                IvParameterSpec ivSpec = new IvParameterSpec(iv);
+                cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivSpec);
                 byte[] encryptedBytes = cipher.doFinal(data.getBytes(StandardCharsets.UTF_8));
-                return Base64.getEncoder().encodeToString(encryptedBytes);
+                byte[] combined = new byte[iv.length + encryptedBytes.length];
+                System.arraycopy(iv, 0, combined, 0, iv.length);
+                System.arraycopy(encryptedBytes, 0, combined, iv.length, encryptedBytes.length);
+                return Base64.getEncoder().encodeToString(combined);
             } else if (mode.equals("decrypt")) {
-                cipher.init(Cipher.DECRYPT_MODE, secretKey);
-                byte[] decryptedBytes = cipher.doFinal(Base64.getDecoder().decode(data));
+                byte[] combined = Base64.getDecoder().decode(data);
+                byte[] iv = Arrays.copyOfRange(combined, 0, 16);
+                byte[] encryptedBytes = Arrays.copyOfRange(combined, 16, combined.length);
+                Cipher cipher = Cipher.getInstance(TRANSFORMATION);
+                IvParameterSpec ivSpec = new IvParameterSpec(iv);
+                cipher.init(Cipher.DECRYPT_MODE, secretKey, ivSpec);
+                byte[] decryptedBytes = cipher.doFinal(encryptedBytes);
                 return new String(decryptedBytes, StandardCharsets.UTF_8);
             } else {
                 throw new RuntimeException("Invalid mode. Please use 'encrypt' or 'decrypt'");
             }
-
         } catch (Exception e) {
             throw new RuntimeException("Error in Encryption/Decryption Process", e);
         }
     }
+
 
     private static int getTextNumericValue(String text) {
         int sum = 0;
