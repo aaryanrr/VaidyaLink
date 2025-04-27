@@ -2,10 +2,10 @@ import React, {useEffect, useState} from 'react';
 
 import '../css/ViewRecords.css';
 import logo from '../../assets/Logo.png';
-import {UserRedirectToHome} from "../Utils";
+import {UserRedirectToUserDashboard} from "../Utils";
 
 const ViewRecords = () => {
-    const toHome = UserRedirectToHome();
+    const toHome = UserRedirectToUserDashboard();
     const [records, setRecords] = useState(null);
     const [decrypted, setDecrypted] = useState(null);
 
@@ -25,6 +25,7 @@ const ViewRecords = () => {
             const response = await fetch('http://localhost:8080/api/users/records', {
                 headers: {
                     'Authorization': `Bearer ${token}`,
+                    'X-Password': btoa(password)
                 }
             });
             if (response.ok) {
@@ -52,6 +53,15 @@ const ViewRecords = () => {
             });
         }
     }, [records, decrypted]);
+
+    useEffect(() => {
+        if (decrypted) {
+            const timer = setTimeout(() => {
+                toHome();
+            }, 5000);
+            return () => clearTimeout(timer);
+        }
+    }, [decrypted]);
 
     if (!records || !decrypted) {
         return (
