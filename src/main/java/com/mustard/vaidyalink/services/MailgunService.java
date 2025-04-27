@@ -29,7 +29,7 @@ public class MailgunService {
         String mailgunUrl = "https://api.mailgun.net/v3/" + domain + "/messages";
 
         MultiValueMap<String, String> form = basicFormat(recipient, subject);
-        form.add("text", "Thank you for registering on VaidyaLink 🙌. Your temporary password for login is: " + password);
+        form.add("text", "Thank you for registering on VaidyaLink 🙌. Your password for login is: " + password);
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(form, headers);
         restTemplate.exchange(mailgunUrl, HttpMethod.POST, request, String.class);
