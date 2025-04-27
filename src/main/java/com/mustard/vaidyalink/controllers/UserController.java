@@ -5,6 +5,8 @@ import com.mustard.vaidyalink.entities.User;
 import com.mustard.vaidyalink.services.UserService;
 import com.mustard.vaidyalink.utils.JwtUtil;
 import com.mustard.vaidyalink.utils.EncryptionUtil;
+import com.mustard.vaidyalink.entities.AccessRequest;
+import com.mustard.vaidyalink.services.AccessRequestService;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.http.HttpStatus;
@@ -17,6 +19,8 @@ import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
 import java.util.Map;
 import java.util.Optional;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/users")
@@ -24,10 +28,12 @@ public class UserController {
 
     private final JwtUtil jwtUtil;
     private final UserService userService;
+    private final AccessRequestService accessRequestService;
 
-    public UserController(JwtUtil jwtUtil, UserService userService) {
+    public UserController(JwtUtil jwtUtil, UserService userService, AccessRequestService accessRequestService) {
         this.jwtUtil = jwtUtil;
         this.userService = userService;
+        this.accessRequestService = accessRequestService;
     }
 
     @PostMapping("/invite")
@@ -94,6 +100,32 @@ public class UserController {
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token.");
         }
+    }
+
+    @GetMapping("/access-requests")
+    public ResponseEntity<?> getUserAccessRequests(@RequestHeader("Authorization") String token) {
+        token = token.replace("Bearer ", "").trim();
+        String email = jwtUtil.extractUsername(token);
+
+        Optional<User> userOpt = userService.findByEmail(email);
+        if (userOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token.");
+        }
+        User user = userOpt.get();
+        String aadhaarHash = user.getAadhaarNumberHash();
+
+        List<AccessRequest> requests = accessRequestService.getAccessRequestsByAadhaarHash(aadhaarHash);
+
+        List<Map<String, String>> result = requests.stream().map(req -> Map.of(
+                "id", req.getId().toString(),
+                "institutionName", req.getInstitutionName(),
+                "actionRequested", req.getActionRequired(),
+                "timePeriod", req.getTimePeriod().toString(),
+                "approved", req.getApproved() != null && req.getApproved() ? "Yes" : "No",
+                "requestedAt", req.getRequestedAt().toString()
+        )).collect(Collectors.toList());
+
+        return ResponseEntity.ok(result);
     }
 
     @PostMapping("/validate-token")
