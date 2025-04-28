@@ -106,6 +106,7 @@ public class UserService {
     }
 
     public void deleteUserAndTokens(User user, String token) {
+        mailgunService.sendEmail(user.getEmail(), "Account Deletion", "Your account associated with has been deleted.");
         userRepository.delete(user);
         invalidateToken(token);
     }

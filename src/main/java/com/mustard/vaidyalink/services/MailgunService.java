@@ -35,18 +35,6 @@ public class MailgunService {
         restTemplate.exchange(mailgunUrl, HttpMethod.POST, request, String.class);
     }
 
-    public void sendForgetPasswordEmail(String recipient, String subject, String password, String IP) {
-        String mailgunUrl = "https://api.mailgun.net/v3/" + domain + "/messages";
-
-        MultiValueMap<String, String> form = basicFormat(recipient, subject);
-        form.add("text", "Your password has been reset. Your new password is: " + password + "\n\n" +
-                "If you did not request this change, please contact us immediately.\n\n" +
-                "Password Reset Requested from IP Address: " + IP);
-
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(form, headers);
-        restTemplate.exchange(mailgunUrl, HttpMethod.POST, request, String.class);
-    }
-
     public void sendEmail(String recipient, String subject, String body) {
         MultiValueMap<String, String> form = basicFormat(recipient, subject);
         form.add("text", body);
