@@ -47,7 +47,8 @@ public class SecurityConfig {
                                 "/api/access-requests/request",
                                 "/api/access-requests/approve",
                                 "/api/users/access-requests",
-                                "/api/users/delete-account")
+                                "/api/users/delete-account",
+                                "/api/users/revoke-access")
                 )
                 .cors(cors -> cors.configurationSource(request -> {
                     CorsConfiguration corsConfiguration = new CorsConfiguration();
@@ -60,7 +61,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/static/**", "/favicon.ico", "/api/users/login", "/api/institutions/login",
                                 "/api/institutions/register", "/api/status", "/api/access-requests/approve",
-                                "/api/users/records", "/api/users/access-requests", "/api/users/delete-account").permitAll()
+                                "/api/users/records", "/api/users/access-requests", "/api/users/delete-account",
+                                "/api/users/revoke-access").permitAll()
                         .requestMatchers("/api/users/invite").authenticated() // Ensure invite endpoint requires authentication
                         .anyRequest().authenticated()
                 )
