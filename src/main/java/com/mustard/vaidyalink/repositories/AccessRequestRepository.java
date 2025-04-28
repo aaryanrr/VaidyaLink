@@ -13,4 +13,6 @@ public interface AccessRequestRepository extends JpaRepository<AccessRequest, UU
     @NotNull Optional<AccessRequest> findById(@NotNull UUID id);
 
     List<AccessRequest> findAllByAadhaarNumber(String aadhaarNumber);
+
+    List<AccessRequest> findAllByInstitutionRegistrationNumber(String institutionRegistrationNumber);
 }

@@ -125,4 +125,8 @@ public class AccessRequestService {
             return false;
         }
     }
+
+    public List<AccessRequest> getAccessRequestsByInstitutionRegistrationNumber(String regNum) {
+        return accessRequestRepository.findAllByInstitutionRegistrationNumber(regNum);
+    }
 }
