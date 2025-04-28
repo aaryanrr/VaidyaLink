@@ -5,6 +5,7 @@ import com.mustard.vaidyalink.entities.Token;
 import com.mustard.vaidyalink.repositories.InstitutionRepository;
 import com.mustard.vaidyalink.repositories.TokenRepository;
 import com.mustard.vaidyalink.utils.JwtUtil;
+import com.mustard.vaidyalink.utils.GenerationUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,7 +18,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.Random;
 
 @Service
 public class InstitutionService {
@@ -48,7 +48,7 @@ public class InstitutionService {
         institution.setEmail(email);
         institution.setPassword(passwordEncoder.encode(rawPassword));
         institution.setLicenseFilePath(licenseFilePath);
-        institution.setRegistrationNumber(generateRegistrationNumber());
+        institution.setRegistrationNumber(generateAndCheckRegNumber());
 
         institutionRepository.save(institution);
     }
@@ -88,13 +88,14 @@ public class InstitutionService {
         }
     }
 
-    //TODO: Derive a better and secure way to generate registration number
-    //TODO: Check for duplicates in the registration number
-    private String generateRegistrationNumber() {
-        Random random = new Random();
-        int randomNum = 100000 + random.nextInt(900000);
-        return "IN" + randomNum;
+    private String generateAndCheckRegNumber() {
+        String regNum;
+        do {
+            regNum = GenerationUtil.generateRegistrationNumber();
+        } while (institutionRepository.findByRegistrationNumber(regNum).isPresent());
+        return regNum;
     }
+
 
     public void saveToken(String token, Institution institution) {
         Token jwtToken = new Token();
