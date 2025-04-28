@@ -1,8 +1,10 @@
 package com.mustard.vaidyalink.controllers;
 
 import com.mustard.vaidyalink.dtos.InviteRequest;
+import com.mustard.vaidyalink.entities.Institution;
 import com.mustard.vaidyalink.entities.User;
 import com.mustard.vaidyalink.services.UserService;
+import com.mustard.vaidyalink.services.InstitutionService;
 import com.mustard.vaidyalink.utils.JwtUtil;
 import com.mustard.vaidyalink.utils.EncryptionUtil;
 import com.mustard.vaidyalink.entities.AccessRequest;
@@ -29,11 +31,13 @@ public class UserController {
     private final JwtUtil jwtUtil;
     private final UserService userService;
     private final AccessRequestService accessRequestService;
+    private final InstitutionService institutionService;
 
-    public UserController(JwtUtil jwtUtil, UserService userService, AccessRequestService accessRequestService) {
+    public UserController(JwtUtil jwtUtil, UserService userService, AccessRequestService accessRequestService, InstitutionService institutionService) {
         this.jwtUtil = jwtUtil;
         this.userService = userService;
         this.accessRequestService = accessRequestService;
+        this.institutionService = institutionService;
     }
 
     @PostMapping("/invite")
@@ -103,29 +107,43 @@ public class UserController {
     }
 
     @GetMapping("/access-requests")
-    public ResponseEntity<?> getUserAccessRequests(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<?> getAccessRequests(@RequestHeader("Authorization") String token) {
         token = token.replace("Bearer ", "").trim();
         String email = jwtUtil.extractUsername(token);
 
         Optional<User> userOpt = userService.findByEmail(email);
-        if (userOpt.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token.");
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+            String aadhaarHash = user.getAadhaarNumberHash();
+            List<AccessRequest> requests = accessRequestService.getAccessRequestsByAadhaarHash(aadhaarHash);
+            List<Map<String, String>> result = requests.stream().map(req -> Map.of(
+                    "id", req.getId().toString(),
+                    "institutionName", req.getInstitutionName(),
+                    "actionRequested", req.getActionRequired(),
+                    "timePeriod", req.getTimePeriod().toString(),
+                    "approved", req.getApproved() != null && req.getApproved() ? "Yes" : "No",
+                    "requestedAt", req.getRequestedAt().toString()
+            )).collect(Collectors.toList());
+            return ResponseEntity.ok(result);
         }
-        User user = userOpt.get();
-        String aadhaarHash = user.getAadhaarNumberHash();
 
-        List<AccessRequest> requests = accessRequestService.getAccessRequestsByAadhaarHash(aadhaarHash);
+        Optional<Institution> instOpt = institutionService.findByEmail(email);
+        if (instOpt.isPresent()) {
+            Institution institution = instOpt.get();
+            String regNum = institution.getRegistrationNumber();
+            List<AccessRequest> requests = accessRequestService.getAccessRequestsByInstitutionRegistrationNumber(regNum);
+            List<Map<String, String>> result = requests.stream().map(req -> Map.of(
+                    "id", req.getId().toString(),
+                    "aadhaarNumber", req.getAadhaarNumber(),
+                    "actionRequested", req.getActionRequired(),
+                    "timePeriod", req.getTimePeriod().toString(),
+                    "approved", req.getApproved() != null && req.getApproved() ? "Yes" : "No",
+                    "requestedAt", req.getRequestedAt().toString()
+            )).collect(Collectors.toList());
+            return ResponseEntity.ok(result);
+        }
 
-        List<Map<String, String>> result = requests.stream().map(req -> Map.of(
-                "id", req.getId().toString(),
-                "institutionName", req.getInstitutionName(),
-                "actionRequested", req.getActionRequired(),
-                "timePeriod", req.getTimePeriod().toString(),
-                "approved", req.getApproved() != null && req.getApproved() ? "Yes" : "No",
-                "requestedAt", req.getRequestedAt().toString()
-        )).collect(Collectors.toList());
-
-        return ResponseEntity.ok(result);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token.");
     }
 
     @PostMapping("/validate-token")
