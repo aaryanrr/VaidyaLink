@@ -147,6 +147,26 @@ public class UserController {
         }
     }
 
+    @PostMapping("/delete-account")
+    public ResponseEntity<String> deleteAccount(@RequestHeader("Authorization") String token,
+                                                @RequestBody Map<String, String> body) {
+        token = token.replace("Bearer ", "").trim();
+        String email = jwtUtil.extractUsername(token);
+        Optional<User> userOpt = userService.findByEmail(email);
+        if (userOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token.");
+        }
+        User user = userOpt.get();
+        String encodedPassword = body.get("password");
+        String password = new String(java.util.Base64.getDecoder().decode(encodedPassword));
+        if (!userService.isPasswordCorrect(user, password)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Incorrect Password");
+        }
+        userService.deleteUserAndTokens(user, token);
+        return ResponseEntity.ok("Account deleted successfully.");
+
+    }
+
     private String hashAadhaar(String aadhaar) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
