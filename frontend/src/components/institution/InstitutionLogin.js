@@ -51,8 +51,7 @@ function InstitutionLogin() {
                 setErrorMessage('');
                 navigate('/institution-dashboard');
             } else {
-                const errorData = await response.json();
-                setErrorMessage(errorData.message || 'Invalid email or password.');
+                setErrorMessage('Invalid email or password.');
                 setSuccessMessage('');
             }
         } catch (error) {
