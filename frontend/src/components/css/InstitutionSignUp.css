@@ -102,7 +102,7 @@ body {
 .signup-footer {
     width: 100%;
     max-width: 1200px;
-    padding: 20px 0;
+    padding: 10px 0;
     background-color: var(--primary-bg);
     color: var(--secondary-text-color);
     position: absolute;
@@ -117,5 +117,5 @@ body {
 
 .error-message {
     color: red;
-    margin-top: 10px;
+    margin: 0;
 }
