@@ -107,4 +107,21 @@ public class AccessRequestService {
             throw new RuntimeException("Error hashing Aadhaar number", e);
         }
     }
+
+    public boolean revokeAccessRequest(String accessRequestId, String userAadhaarHash) {
+        try {
+            UUID uuid = UUID.fromString(accessRequestId);
+            Optional<AccessRequest> reqOpt = accessRequestRepository.findById(uuid);
+            if (reqOpt.isEmpty()) return false;
+            AccessRequest req = reqOpt.get();
+            if (!req.getAadhaarNumber().equals(userAadhaarHash) || !Boolean.TRUE.equals(req.getApproved())) {
+                return false;
+            }
+            req.setApproved(false);
+            accessRequestRepository.save(req);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
 }
