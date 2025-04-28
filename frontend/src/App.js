@@ -16,6 +16,7 @@ import ViewRecords from './components/user/ViewRecords';
 import AccessHistory from './components/user/AccessHistory';
 import DeleteAccount from './components/user/DeleteAccount';
 import RevokeAccess from './components/user/RevokeAccess';
+import AccessHistoryInstitution from "./components/institution/AccessHistoryInstitution";
 
 function App() {
     return (
@@ -88,6 +89,13 @@ function App() {
                         element={
                             <PrivateRoute>
                                 <RevokeAccess/>
+                            </PrivateRoute>
+                        }/>
+                    <Route
+                        path="/access-history-ins"
+                        element={
+                            <PrivateRoute>
+                                <AccessHistoryInstitution/>
                             </PrivateRoute>
                         }/>
                     <Route path="*" element={<NotFound/>}/>
