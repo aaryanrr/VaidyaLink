@@ -15,6 +15,7 @@ import AccessRequest from './components/institution/AccessRequest';
 import ViewRecords from './components/user/ViewRecords';
 import AccessHistory from './components/user/AccessHistory';
 import DeleteAccount from './components/user/DeleteAccount';
+import RevokeAccess from './components/user/RevokeAccess';
 
 function App() {
     return (
@@ -80,6 +81,13 @@ function App() {
                         element={
                             <PrivateRoute>
                                 <DeleteAccount/>
+                            </PrivateRoute>
+                        }/>
+                    <Route
+                        path="/revoke-access"
+                        element={
+                            <PrivateRoute>
+                                <RevokeAccess/>
                             </PrivateRoute>
                         }/>
                     <Route path="*" element={<NotFound/>}/>
