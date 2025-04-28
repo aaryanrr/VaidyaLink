@@ -3,7 +3,7 @@ import {useNavigate} from 'react-router-dom';
 
 import '../css/AccessRequest.css';
 import logo from '../../assets/Logo.png';
-import {UserRedirectToHome} from "../Utils";
+import {UserRedirectToInstitutionDashboard} from "../Utils";
 
 const AccessRequest = () => {
     const [aadhaar, setAadhaar] = useState('');
@@ -11,7 +11,7 @@ const AccessRequest = () => {
     const [timePeriod, setTimePeriod] = useState('');
     const [actionRequired, setActionRequired] = useState([]);
     const navigate = useNavigate();
-    const toHome = UserRedirectToHome();
+    const toHome = UserRedirectToInstitutionDashboard();
 
     const handleDataCategoryChange = (e) => {
         const options = Array.from(e.target.selectedOptions, option => option.value);
