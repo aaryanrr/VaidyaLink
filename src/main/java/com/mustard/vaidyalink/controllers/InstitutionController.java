@@ -25,14 +25,21 @@ public class InstitutionController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> registerInstitution(
+    public ResponseEntity<?> registerInstitution(
             @RequestParam String institutionName,
             @RequestParam String email,
             @RequestParam String password,
             @RequestParam("licenseFile") MultipartFile licenseFile) {
-        institutionService.registerInstitution(institutionName, email, password, licenseFile);
-        return ResponseEntity.ok("Institution registered successfully!");
+        try {
+            institutionService.registerInstitution(institutionName, email, password, licenseFile);
+            return ResponseEntity.ok("Institution registered successfully!");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred during registration.");
+        }
     }
+
 
     @GetMapping("/find")
     public ResponseEntity<Institution> findInstitution(@RequestParam String email) {

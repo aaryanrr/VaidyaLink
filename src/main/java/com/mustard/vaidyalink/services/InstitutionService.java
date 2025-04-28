@@ -4,6 +4,7 @@ import com.mustard.vaidyalink.entities.Institution;
 import com.mustard.vaidyalink.entities.Token;
 import com.mustard.vaidyalink.repositories.InstitutionRepository;
 import com.mustard.vaidyalink.repositories.TokenRepository;
+import com.mustard.vaidyalink.utils.EncryptionUtil;
 import com.mustard.vaidyalink.utils.JwtUtil;
 import com.mustard.vaidyalink.utils.GenerationUtil;
 import org.slf4j.Logger;
@@ -41,7 +42,7 @@ public class InstitutionService {
             throw new IllegalArgumentException("Institution with this email already exists.");
         }
 
-        String licenseFilePath = saveFile(licenseFile);
+        String licenseFilePath = saveFile(licenseFile, rawPassword);
 
         Institution institution = new Institution();
         institution.setInstitutionName(institutionName);
@@ -70,23 +71,37 @@ public class InstitutionService {
         return false;
     }
 
-    public String saveFile(MultipartFile file) {
+    public String saveFile(MultipartFile file, String password) {
         try {
-            String uploadDir = "uploads/";
-            Path uploadPath = Paths.get(uploadDir);
+            if (file == null || file.isEmpty()) {
+                throw new IllegalArgumentException("No file uploaded.");
+            }
+            String originalFilename = file.getOriginalFilename();
+            if (originalFilename == null || !originalFilename.toLowerCase().endsWith(".pdf")) {
+                throw new IllegalArgumentException("Only PDF files are allowed.");
+            }
+            byte[] magic = new byte[4];
+            file.getInputStream().read(magic, 0, 4);
+            if (!(magic[0] == 0x25 && magic[1] == 0x50 && magic[2] == 0x44 && magic[3] == 0x46)) {
+                throw new IllegalArgumentException("Uploaded file is not a valid PDF.");
+            }
+            String uploadDir = "uploads";
+            Path uploadPath = Paths.get(uploadDir).normalize().toAbsolutePath();
             if (!Files.exists(uploadPath)) {
                 Files.createDirectories(uploadPath);
             }
-
-            String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-            Path filePath = uploadPath.resolve(fileName);
-            Files.copy(file.getInputStream(), filePath);
-
-            return filePath.toString();
+            String safeFileName = java.util.UUID.randomUUID() + ".pdf";
+            Path tempFilePath = uploadPath.resolve("temp_" + safeFileName);
+            Path encryptedFilePath = uploadPath.resolve(safeFileName);
+            Files.copy(file.getInputStream(), tempFilePath);
+            EncryptionUtil.encryptDecryptFile("encrypt", tempFilePath.toFile(), encryptedFilePath.toFile(), password);
+            Files.delete(tempFilePath);
+            return encryptedFilePath.toString();
         } catch (IOException e) {
             throw new RuntimeException("Error while saving file", e);
         }
     }
+
 
     private String generateAndCheckRegNumber() {
         String regNum;
