@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
-import java.security.SecureRandom;
 
 @Service
 public class UserService {
@@ -75,7 +74,7 @@ public class UserService {
     public Optional<User> findByAadhaarNumberHash(String aadhaarNumberHash) {
         return userRepository.findByAadhaarNumberHash(aadhaarNumberHash);
     }
-    
+
     public Optional<User> findByEmail(String email) {
         return userRepository.findByEmail(email);
     }
