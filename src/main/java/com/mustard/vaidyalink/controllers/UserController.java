@@ -167,6 +167,47 @@ public class UserController {
 
     }
 
+    @PostMapping("/revoke-access")
+    public ResponseEntity<?> revokeAccess(
+            @RequestHeader("Authorization") String token,
+            @RequestBody Map<String, String> body) {
+
+        token = token.replace("Bearer ", "").trim();
+        String email = jwtUtil.extractUsername(token);
+        Optional<User> userOpt = userService.findByEmail(email);
+        if (userOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token.");
+        }
+        User user = userOpt.get();
+
+        String encodedId = body.get("accessRequestId");
+        String encodedPassword = body.get("password");
+        if (encodedId == null || encodedPassword == null) {
+            return ResponseEntity.badRequest().body("Missing fields.");
+        }
+
+        String accessRequestId;
+        String password;
+        try {
+            accessRequestId = new String(java.util.Base64.getDecoder().decode(encodedId));
+            password = new String(java.util.Base64.getDecoder().decode(encodedPassword));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Invalid encoding.");
+        }
+
+        if (!userService.isPasswordCorrect(user, password)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Incorrect Password");
+        }
+
+        boolean revoked = accessRequestService.revokeAccessRequest(accessRequestId, user.getAadhaarNumberHash());
+        if (!revoked) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Access request not found or not approved yet.");
+        }
+
+        return ResponseEntity.ok("Access revoked successfully.");
+    }
+
+
     private String hashAadhaar(String aadhaar) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
