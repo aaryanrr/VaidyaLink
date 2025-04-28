@@ -14,8 +14,16 @@ function InstitutionSignUp() {
     const toHome = UserRedirectToHome();
 
     const handleFileChange = (e) => {
-        setLicenseFile(e.target.files[0]);
+        const file = e.target.files[0];
+        if (file && file.type !== "application/pdf" && !file.name.toLowerCase().endsWith(".pdf")) {
+            setErrorMessage("Only PDF files are allowed.");
+            setLicenseFile(null);
+        } else {
+            setErrorMessage('');
+            setLicenseFile(file);
+        }
     };
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
