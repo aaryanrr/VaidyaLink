@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class PasswordUtil {
+public class GenerationUtil {
 
     private static final String UPPER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private static final String LOWER = "abcdefghijklmnopqrstuvwxyz";
@@ -37,4 +37,19 @@ public class PasswordUtil {
         }
         return password.toString();
     }
+
+    public static String generateRegistrationNumber() {
+        SecureRandom random = new SecureRandom();
+        StringBuilder regNum = new StringBuilder();
+
+        for (int i = 0; i < 2; i++) {
+            regNum.append(UPPER.charAt(random.nextInt(UPPER.length())));
+        }
+        for (int i = 0; i < 6; i++) {
+            regNum.append(DIGITS.charAt(random.nextInt(DIGITS.length())));
+        }
+
+        return regNum.toString();
+    }
+
 }
