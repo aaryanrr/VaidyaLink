@@ -40,6 +40,7 @@ public class AccessRequestService {
             accessRequest.setActionRequired(String.join(", ", requestDto.getActionRequired()));
             accessRequest.setApproved(false);
             accessRequest.setInstitutionName(institutionName);
+            accessRequest.setInstitutionRegistrationNumber(institutionRegNum);
             accessRequestRepository.save(accessRequest);
 
             generateAccessEmail(accessRequest, institutionName, institutionRegNum, requestDto, user);

@@ -21,7 +21,10 @@ public class AccessRequest {
 
     @Column(name = "institution_name", nullable = false)
     private String institutionName;
-    
+
+    @Column(name = "institution_registration_number", nullable = false)
+    private String institutionRegistrationNumber;
+
     @Column(name = "aadhaar_number", nullable = false)
     private String aadhaarNumber;
 

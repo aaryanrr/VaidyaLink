@@ -11,6 +11,7 @@ import java.util.List;
 public class AccessRequestDto {
     private String aadhaarNumber;
     private String institutionName;
+    private String institutionRegistrationNumber;
     private List<String> dataCategory;
     private LocalDate timePeriod;
     private List<String> actionRequired;
