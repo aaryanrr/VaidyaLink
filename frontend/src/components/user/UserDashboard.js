@@ -48,6 +48,10 @@ const UserDashboard = () => {
                     <span>View your records</span>
                     <span className="arrow">→</span>
                 </div>
+                <div className="dashboard-option" onClick={() => handleNavigation('/delete-account')}>
+                    <span>Delete your Account</span>
+                    <span className="arrow">→</span>
+                </div>
                 <div className="dashboard-option" onClick={handleLogout}>
                     <span>Logout</span>
                     <span className="arrow">→</span>

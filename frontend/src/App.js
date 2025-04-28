@@ -14,6 +14,7 @@ import InviteUser from './components/institution/InviteUser';
 import AccessRequest from './components/institution/AccessRequest';
 import ViewRecords from './components/user/ViewRecords';
 import AccessHistory from './components/user/AccessHistory';
+import DeleteAccount from './components/user/DeleteAccount';
 
 function App() {
     return (
@@ -74,6 +75,13 @@ function App() {
                             </PrivateRoute>
                         }
                     />
+                    <Route
+                        path="/delete-account"
+                        element={
+                            <PrivateRoute>
+                                <DeleteAccount/>
+                            </PrivateRoute>
+                        }/>
                     <Route path="*" element={<NotFound/>}/>
                 </Routes>
             </div>
