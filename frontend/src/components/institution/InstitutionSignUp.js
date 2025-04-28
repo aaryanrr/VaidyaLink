@@ -42,6 +42,9 @@ function InstitutionSignUp() {
             if (response.ok) {
                 setSuccessMessage('Institution registered successfully!');
                 setErrorMessage('');
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 1000);
             } else {
                 const contentType = response.headers.get("content-type");
                 if (contentType && contentType.indexOf("application/json") !== -1) {
