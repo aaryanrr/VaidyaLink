@@ -50,7 +50,7 @@ const InstitutionDashboard = () => {
                     <Link to="/invite-new-user" className="dashboard-option">
                         Invite new user<span className="arrow">➜</span>
                     </Link>
-                    <Link to="/access-history" className="dashboard-option">
+                    <Link to="/access-history-institution" className="dashboard-option">
                         Access history<span className="arrow">➜</span>
                     </Link>
                 </div>
