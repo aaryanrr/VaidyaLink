@@ -42,14 +42,15 @@ CREATE TABLE tokens
 
 CREATE TABLE access_requests
 (
-    id               BINARY(16) PRIMARY KEY,
-    institution_name VARCHAR(255) NOT NULL,
-    aadhaar_number   VARCHAR(255) NOT NULL,
-    data_category    VARCHAR(255) NOT NULL,
-    time_period      DATE         NOT NULL,
-    action_required  VARCHAR(255) NOT NULL,
-    approved         BOOLEAN   DEFAULT FALSE,
-    requested_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    id                              BINARY(16) PRIMARY KEY,
+    institution_name                VARCHAR(255) NOT NULL,
+    institution_registration_number VARCHAR(255) NOT NULL,
+    aadhaar_number                  VARCHAR(255) NOT NULL,
+    data_category                   VARCHAR(255) NOT NULL,
+    time_period                     DATE         NOT NULL,
+    action_required                 VARCHAR(255) NOT NULL,
+    approved                        BOOLEAN   DEFAULT FALSE,
+    requested_at                    TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 
