@@ -91,4 +91,55 @@ public class EncryptionUtil {
             throw new RuntimeException("Error in Double Encryption/Decryption Process", e);
         }
     }
+
+    public static void encryptDecryptFile(String mode, java.io.File inputFile, java.io.File outputFile, String key) {
+        try {
+            byte[] keyBytes = key.getBytes(StandardCharsets.UTF_8);
+            keyBytes = Arrays.copyOf(keyBytes, 16);
+            SecretKeySpec secretKey = new SecretKeySpec(keyBytes, ALGORITHM);
+
+            Cipher cipher = Cipher.getInstance(TRANSFORMATION);
+            if (mode.equals("encrypt")) {
+                byte[] iv = new byte[16];
+                SecureRandom random = new SecureRandom();
+                random.nextBytes(iv);
+                IvParameterSpec ivSpec = new IvParameterSpec(iv);
+                cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivSpec);
+
+                try (java.io.FileInputStream fis = new java.io.FileInputStream(inputFile);
+                     java.io.FileOutputStream fos = new java.io.FileOutputStream(outputFile)) {
+                    fos.write(iv);
+                    byte[] buffer = new byte[4096];
+                    int bytesRead;
+                    while ((bytesRead = fis.read(buffer)) != -1) {
+                        byte[] output = cipher.update(buffer, 0, bytesRead);
+                        if (output != null) fos.write(output);
+                    }
+                    byte[] outputBytes = cipher.doFinal();
+                    if (outputBytes != null) fos.write(outputBytes);
+                }
+            } else if (mode.equals("decrypt")) {
+                try (java.io.FileInputStream fis = new java.io.FileInputStream(inputFile);
+                     java.io.FileOutputStream fos = new java.io.FileOutputStream(outputFile)) {
+                    byte[] iv = new byte[16];
+                    if (fis.read(iv) != 16) throw new RuntimeException("Invalid IV in file");
+                    IvParameterSpec ivSpec = new IvParameterSpec(iv);
+                    cipher.init(Cipher.DECRYPT_MODE, secretKey, ivSpec);
+                    byte[] buffer = new byte[4096];
+                    int bytesRead;
+                    while ((bytesRead = fis.read(buffer)) != -1) {
+                        byte[] output = cipher.update(buffer, 0, bytesRead);
+                        if (output != null) fos.write(output);
+                    }
+                    byte[] outputBytes = cipher.doFinal();
+                    if (outputBytes != null) fos.write(outputBytes);
+                }
+            } else {
+                throw new RuntimeException("Invalid mode. Please use 'encrypt' or 'decrypt'");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error in File Encryption/Decryption Process", e);
+        }
+    }
+
 }
