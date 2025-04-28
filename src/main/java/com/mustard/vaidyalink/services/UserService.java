@@ -102,7 +102,7 @@ public class UserService {
     }
 
     public boolean isPasswordCorrect(User user, String password) {
-        return passwordEncoder.matches(password, user.getPassword());
+        return !passwordEncoder.matches(password, user.getPassword());
     }
 
     public void deleteUserAndTokens(User user, String token) {

@@ -159,7 +159,7 @@ public class UserController {
         User user = userOpt.get();
         String encodedPassword = body.get("password");
         String password = new String(java.util.Base64.getDecoder().decode(encodedPassword));
-        if (!userService.isPasswordCorrect(user, password)) {
+        if (userService.isPasswordCorrect(user, password)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Incorrect Password");
         }
         userService.deleteUserAndTokens(user, token);
@@ -195,7 +195,7 @@ public class UserController {
             return ResponseEntity.badRequest().body("Invalid encoding.");
         }
 
-        if (!userService.isPasswordCorrect(user, password)) {
+        if (userService.isPasswordCorrect(user, password)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Incorrect Password");
         }
 
