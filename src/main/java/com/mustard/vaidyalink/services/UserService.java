@@ -6,7 +6,7 @@ import com.mustard.vaidyalink.repositories.UserRepository;
 import com.mustard.vaidyalink.repositories.TokenRepository;
 import com.mustard.vaidyalink.utils.JwtUtil;
 import com.mustard.vaidyalink.utils.EncryptionUtil;
-import com.mustard.vaidyalink.utils.PasswordUtil;
+import com.mustard.vaidyalink.utils.GenerationUtil;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +33,7 @@ public class UserService {
 
     public void inviteUser(String name, String email, String aadhaarNumberHash, String phoneNumber, LocalDate dateOfBirth,
                            String address, String bloodGroup, String emergencyContact, String allergies, Double heightCm, Double weightKg) {
-        String rawPassword = PasswordUtil.generateSecurePassword();
+        String rawPassword = GenerationUtil.generateSecurePassword();
         String encodedPassword = passwordEncoder.encode(rawPassword);
 
         User user = new User();
