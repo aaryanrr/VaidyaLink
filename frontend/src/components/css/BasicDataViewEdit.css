@@ -27,6 +27,7 @@
 
 .basicdata-logo {
     width: 160px;
+    margin-top: 50px;
 }
 
 .basicdata-title {
@@ -102,13 +103,13 @@
 
 .basicdata-success {
     color: green;
-    margin-top: 18px;
+    margin-top: 0px;
     font-size: 1.1rem;
 }
 
 .basicdata-error {
     color: red;
-    margin-top: 18px;
+    margin-top: 0px;
     font-size: 1.1rem;
 }
 
