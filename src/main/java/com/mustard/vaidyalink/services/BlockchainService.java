@@ -2,24 +2,65 @@ package com.mustard.vaidyalink.services;
 
 import com.mustard.vaidyalink.contract.MedicalDataAccess;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.web3j.crypto.Credentials;
 import org.web3j.protocol.Web3j;
 import org.web3j.tx.gas.ContractGasProvider;
 import org.web3j.tx.gas.DefaultGasProvider;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
 @Service
 public class BlockchainService {
 
+    private static final String CONTRACT_ADDRESS_PATH = "contract_address.txt";
     private final MedicalDataAccess contract;
 
     @Autowired
-    public BlockchainService(Web3j web3j, Credentials credentials) {
+    public BlockchainService(Web3j web3j, Credentials credentials, Environment env) {
         try {
             ContractGasProvider gasProvider = new DefaultGasProvider();
-            this.contract = MedicalDataAccess.deploy(web3j, credentials, gasProvider).send();
+            String contractAddress = loadContractAddress();
+            MedicalDataAccess loadedContract = null;
+            if (contractAddress != null) {
+                loadedContract = MedicalDataAccess.load(contractAddress, web3j, credentials, gasProvider);
+                if (!loadedContract.isValid()) {
+                    loadedContract = null;
+                }
+            }
+            if (loadedContract == null) {
+                MedicalDataAccess deployed = MedicalDataAccess.deploy(web3j, credentials, gasProvider).send();
+                contractAddress = deployed.getContractAddress();
+                saveContractAddress(contractAddress);
+                this.contract = deployed;
+            } else {
+                this.contract = loadedContract;
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private String loadContractAddress() {
+        try {
+            File file = new File(CONTRACT_ADDRESS_PATH);
+            if (file.exists()) {
+                return new String(Files.readAllBytes(Paths.get(CONTRACT_ADDRESS_PATH))).trim();
+            }
+        } catch (IOException ignored) {
+        }
+        return null;
+    }
+
+    private void saveContractAddress(String address) {
+        try {
+            Files.write(Paths.get(CONTRACT_ADDRESS_PATH), address.getBytes());
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save contract address", e);
         }
     }
 
