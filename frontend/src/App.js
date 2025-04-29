@@ -20,6 +20,7 @@ import AccessHistoryInstitution from "./components/institution/AccessHistoryInst
 import ApproveAccessRequest from './components/user/ApproveAccessRequest';
 import CurrentAccess from './components/institution/CurrentAccess';
 import BasicDataViewEdit from "./components/institution/BasicDataViewEdit";
+import SyncUpdate from './components/SyncUpdate';
 
 function App() {
     return (
@@ -33,6 +34,7 @@ function App() {
                     <Route path="/signup" element={<SignUp/>}/>
                     <Route path="/institution-signup" element={<InstitutionSignUp/>}/>
                     <Route path="/approve-access-request" element={<ApproveAccessRequest/>}/>
+                    <Route path="/approve-sync" element={<SyncUpdate/>}/>
                     <Route
                         path="/institution-dashboard"
                         element={
