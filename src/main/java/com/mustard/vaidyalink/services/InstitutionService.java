@@ -32,13 +32,15 @@ public class InstitutionService {
     private final AccessRequestRepository accessRequestRepository;
     private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
+    private final MailgunService mailgunService;
     private static final Logger logger = LoggerFactory.getLogger(InstitutionService.class);
 
 
     public InstitutionService(InstitutionRepository institutionRepository, PasswordEncoder passwordEncoder,
                               TokenRepository tokenRepository, JwtUtil jwtUtil,
                               InstitutionAccessDataRepository institutionAccessDataRepository,
-                              AccessRequestRepository accessRequestRepository, UserRepository userRepository) {
+                              AccessRequestRepository accessRequestRepository, UserRepository userRepository,
+                              MailgunService mailgunService) {
         this.institutionRepository = institutionRepository;
         this.passwordEncoder = passwordEncoder;
         this.tokenRepository = tokenRepository;
@@ -46,6 +48,7 @@ public class InstitutionService {
         this.institutionAccessDataRepository = institutionAccessDataRepository;
         this.accessRequestRepository = accessRequestRepository;
         this.userRepository = userRepository;
+        this.mailgunService = mailgunService;
     }
 
     public void registerInstitution(String institutionName, String email, String rawPassword, MultipartFile licenseFile) {
@@ -180,6 +183,8 @@ public class InstitutionService {
             data.setHeightCm(EncryptionUtil.encryptDecryptDouble("encrypt", Double.valueOf(editData.get("heightCm")), accessKey));
             data.setWeightKg(EncryptionUtil.encryptDecryptDouble("encrypt", Double.valueOf(editData.get("weightKg")), accessKey));
             institutionAccessDataRepository.save(data);
+            requestSync(accessKey, accessRequestId, EncryptionUtil.encryptDecryptString("decrypt",
+                    data.getEmail(), accessKey), data.getInstitutionRegistrationNumber());
         }
         Map<String, Object> result = new HashMap<>();
         result.put("name", EncryptionUtil.encryptDecryptString("decrypt", data.getName(), accessKey));
@@ -195,6 +200,18 @@ public class InstitutionService {
         result.put("canEdit", canEdit);
         result.put("canView", canView);
         return result;
+    }
+
+    public void requestSync(String accessKey, String accessRequestId,
+                            String userEmail, String regNum) {
+
+        String emailBody = "Dear User,\n\n"
+                + "Your data has been edited by an Institution with registration number: " + regNum + "\n\n"
+                + "If you approve, please use the following link to sync the changes to your main record:\n\n"
+                + "http://localhost:3000/approve-sync?id=" + accessRequestId + "\n\n"
+                + "The institution's access key to complete the sync is: " + accessKey + "\n\n"
+                + "Best regards,\nVaidyaLink Team";
+        mailgunService.sendEmail(userEmail, "VaidyaLink Data Sync Approval", emailBody);
     }
 
 
