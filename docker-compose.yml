@@ -59,7 +59,7 @@ services:
   ganache:
     container_name: vaidyalink-ganache
     image: trufflesuite/ganache-cli:latest
-    command: ganache-cli -p 8545 -h 0.0.0.0 -m "vaidyalink"
+    command: ganache-cli -p 8545 -h 0.0.0.0 -m "vaidyalink" -l 100000000
     ports:
       - "8545:8545"
     networks:
