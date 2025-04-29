@@ -17,6 +17,7 @@ import AccessHistory from './components/user/AccessHistory';
 import DeleteAccount from './components/user/DeleteAccount';
 import RevokeAccess from './components/user/RevokeAccess';
 import AccessHistoryInstitution from "./components/institution/AccessHistoryInstitution";
+import ApproveAccessRequest from './components/user/ApproveAccessRequest';
 
 function App() {
     return (
@@ -29,6 +30,7 @@ function App() {
                     <Route path="/about" element={<About/>}/>
                     <Route path="/signup" element={<SignUp/>}/>
                     <Route path="/institution-signup" element={<InstitutionSignUp/>}/>
+                    <Route path="/approve-access-request" element={<ApproveAccessRequest/>}/>
                     <Route
                         path="/institution-dashboard"
                         element={
