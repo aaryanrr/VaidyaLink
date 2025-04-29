@@ -18,4 +18,6 @@ public interface AccessRequestRepository extends JpaRepository<AccessRequest, UU
     List<AccessRequest> findAllByInstitutionRegistrationNumber(String institutionRegistrationNumber);
 
     List<AccessRequest> findAllByTimePeriodBeforeAndApprovedIsTrue(LocalDate timePeriod);
+
+    List<AccessRequest> findAllByInstitutionRegistrationNumberAndApprovedIsTrue(String regNum);
 }

@@ -1,9 +1,11 @@
 package com.mustard.vaidyalink.services;
 
-import com.mustard.vaidyalink.entities.Institution;
-import com.mustard.vaidyalink.entities.Token;
+import com.mustard.vaidyalink.entities.*;
 import com.mustard.vaidyalink.repositories.InstitutionRepository;
 import com.mustard.vaidyalink.repositories.TokenRepository;
+import com.mustard.vaidyalink.repositories.InstitutionAccessDataRepository;
+import com.mustard.vaidyalink.repositories.AccessRequestRepository;
+import com.mustard.vaidyalink.repositories.UserRepository;
 import com.mustard.vaidyalink.utils.EncryptionUtil;
 import com.mustard.vaidyalink.utils.JwtUtil;
 import com.mustard.vaidyalink.utils.GenerationUtil;
@@ -18,7 +20,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class InstitutionService {
@@ -26,15 +28,24 @@ public class InstitutionService {
     private final InstitutionRepository institutionRepository;
     private final TokenRepository tokenRepository;
     private final PasswordEncoder passwordEncoder;
+    private final InstitutionAccessDataRepository institutionAccessDataRepository;
+    private final AccessRequestRepository accessRequestRepository;
+    private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
     private static final Logger logger = LoggerFactory.getLogger(InstitutionService.class);
 
 
-    public InstitutionService(InstitutionRepository institutionRepository, PasswordEncoder passwordEncoder, TokenRepository tokenRepository, JwtUtil jwtUtil) {
+    public InstitutionService(InstitutionRepository institutionRepository, PasswordEncoder passwordEncoder,
+                              TokenRepository tokenRepository, JwtUtil jwtUtil,
+                              InstitutionAccessDataRepository institutionAccessDataRepository,
+                              AccessRequestRepository accessRequestRepository, UserRepository userRepository) {
         this.institutionRepository = institutionRepository;
         this.passwordEncoder = passwordEncoder;
         this.tokenRepository = tokenRepository;
         this.jwtUtil = jwtUtil;
+        this.institutionAccessDataRepository = institutionAccessDataRepository;
+        this.accessRequestRepository = accessRequestRepository;
+        this.userRepository = userRepository;
     }
 
     public void registerInstitution(String institutionName, String email, String rawPassword, MultipartFile licenseFile) {
@@ -135,4 +146,56 @@ public class InstitutionService {
             return false;
         }
     }
+
+    public List<AccessRequest> getApprovedAccessRequests(String regNum) {
+        return accessRequestRepository.findAllByInstitutionRegistrationNumberAndApprovedIsTrue(regNum);
+    }
+
+    public String getUserEmailByAadhaarHash(String aadhaarHash) {
+        return userRepository.findByAadhaarNumberHash(aadhaarHash)
+                .map(User::getEmail)
+                .orElse("N/A");
+    }
+
+    public Map<String, Object> getOrEditBasicDataWithAccessRights(String accessRequestId, String accessKey, boolean isEdit, Map<String, String> editData) {
+        UUID reqId = UUID.fromString(accessRequestId);
+        AccessRequest req = accessRequestRepository.findById(reqId)
+                .orElseThrow(() -> new IllegalArgumentException("Access request not found."));
+        String actionRequested = req.getActionRequired();
+        boolean canEdit = actionRequested != null && actionRequested.contains("Write");
+        boolean canView = actionRequested != null && (actionRequested.contains("Read") || actionRequested.contains("Edit"));
+
+        if (!req.getApproved()) throw new IllegalArgumentException("Access Request Not approved");
+
+        InstitutionAccessData data = institutionAccessDataRepository.findAllByAccessRequestId(reqId)
+                .stream().findFirst().orElseThrow(() -> new IllegalArgumentException("No data found for this access request."));
+
+        if (isEdit) {
+            if (!canEdit) throw new IllegalArgumentException("You do not have write access.");
+            data.setPhoneNumber(EncryptionUtil.encryptDecryptString("encrypt", editData.get("phoneNumber"), accessKey));
+            data.setAddress(EncryptionUtil.encryptDecryptString("encrypt", editData.get("address"), accessKey));
+            data.setBloodGroup(EncryptionUtil.encryptDecryptString("encrypt", editData.get("bloodGroup"), accessKey));
+            data.setEmergencyContact(EncryptionUtil.encryptDecryptString("encrypt", editData.get("emergencyContact"), accessKey));
+            data.setAllergies(EncryptionUtil.encryptDecryptString("encrypt", editData.get("allergies"), accessKey));
+            data.setHeightCm(EncryptionUtil.encryptDecryptDouble("encrypt", Double.valueOf(editData.get("heightCm")), accessKey));
+            data.setWeightKg(EncryptionUtil.encryptDecryptDouble("encrypt", Double.valueOf(editData.get("weightKg")), accessKey));
+            institutionAccessDataRepository.save(data);
+        }
+        Map<String, Object> result = new HashMap<>();
+        result.put("name", EncryptionUtil.encryptDecryptString("decrypt", data.getName(), accessKey));
+        result.put("email", EncryptionUtil.encryptDecryptString("decrypt", data.getEmail(), accessKey));
+        result.put("phoneNumber", EncryptionUtil.encryptDecryptString("decrypt", data.getPhoneNumber(), accessKey));
+        result.put("dateOfBirth", EncryptionUtil.encryptDecryptDate("decrypt", data.getDateOfBirth(), accessKey));
+        result.put("address", EncryptionUtil.encryptDecryptString("decrypt", data.getAddress(), accessKey));
+        result.put("bloodGroup", EncryptionUtil.encryptDecryptString("decrypt", data.getBloodGroup(), accessKey));
+        result.put("emergencyContact", EncryptionUtil.encryptDecryptString("decrypt", data.getEmergencyContact(), accessKey));
+        result.put("allergies", EncryptionUtil.encryptDecryptString("decrypt", data.getAllergies(), accessKey));
+        result.put("heightCm", EncryptionUtil.encryptDecryptDouble("decrypt", data.getHeightCm(), accessKey));
+        result.put("weightKg", EncryptionUtil.encryptDecryptDouble("decrypt", data.getWeightKg(), accessKey));
+        result.put("canEdit", canEdit);
+        result.put("canView", canView);
+        return result;
+    }
+
+
 }

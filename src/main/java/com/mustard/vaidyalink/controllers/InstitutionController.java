@@ -1,5 +1,6 @@
 package com.mustard.vaidyalink.controllers;
 
+import com.mustard.vaidyalink.entities.AccessRequest;
 import com.mustard.vaidyalink.entities.Institution;
 import com.mustard.vaidyalink.services.InstitutionService;
 import com.mustard.vaidyalink.utils.JwtUtil;
@@ -9,7 +10,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
 
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -90,6 +97,61 @@ public class InstitutionController {
         System.out.println("Token is valid: " + isValid + " " + token);
         return isValid ? ResponseEntity.ok(true) : ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(false);
     }
+
+    @GetMapping("/current-access")
+    public ResponseEntity<?> getCurrentAccess(@RequestHeader("Authorization") String token) {
+        String jwtToken = token.startsWith("Bearer ") ? token.substring(7) : token;
+        String email = jwtUtil.extractUsername(jwtToken);
+        Optional<Institution> institutionOpt = institutionService.findByEmail(email);
+        if (institutionOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token.");
+        }
+        Institution institution = institutionOpt.get();
+        String regNum = institution.getRegistrationNumber();
+        List<AccessRequest> requests = institutionService.getApprovedAccessRequests(regNum);
+        List<Map<String, Object>> result = requests.stream().map(req -> {
+            Map<String, Object> map = new HashMap<>();
+            map.put("userEmail", institutionService.getUserEmailByAadhaarHash(req.getAadhaarNumber()));
+            map.put("requestId", req.getId().toString());
+            map.put("approved", req.getApproved());
+            map.put("timePeriod", req.getTimePeriod().toString());
+            map.put("basicDataLink", "http://localhost:3000/basic-data?id=" + req.getId());
+            map.put("medicalReportsLink", "http://localhost:3000/medical-reports?id=" + req.getId());
+            map.put("actionRequested", req.getActionRequired());
+            return map;
+        }).toList();
+
+        return ResponseEntity.ok(result);
+    }
+
+    @PostMapping("/basic-data")
+    public ResponseEntity<?> getOrEditBasicData(
+            @RequestHeader("Authorization") String token,
+            @RequestBody Map<String, Object> body
+    ) {
+        String jwtToken = token.startsWith("Bearer ") ? token.substring(7) : token;
+        String email = jwtUtil.extractUsername(jwtToken);
+        Optional<Institution> institutionOpt = institutionService.findByEmail(email);
+        if (institutionOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token.");
+        }
+        String accessRequestId = (String) body.get("accessRequestId");
+        String accessKey = (String) body.get("accessKey");
+        boolean isEdit = "true".equals(body.getOrDefault("edit", "false"));
+        Map<String, String> editData = null;
+        if (isEdit && body.get("editData") instanceof Map) {
+            ObjectMapper mapper = new ObjectMapper();
+            editData = mapper.convertValue(body.get("editData"), new TypeReference<>() {
+            });
+        }
+        try {
+            Map<String, Object> response = institutionService.getOrEditBasicDataWithAccessRights(accessRequestId, accessKey, isEdit, editData);
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
 
     @Setter
     @Getter
