@@ -18,6 +18,8 @@ import DeleteAccount from './components/user/DeleteAccount';
 import RevokeAccess from './components/user/RevokeAccess';
 import AccessHistoryInstitution from "./components/institution/AccessHistoryInstitution";
 import ApproveAccessRequest from './components/user/ApproveAccessRequest';
+import CurrentAccess from './components/institution/CurrentAccess';
+import BasicDataViewEdit from "./components/institution/BasicDataViewEdit";
 
 function App() {
     return (
@@ -98,6 +100,20 @@ function App() {
                         element={
                             <PrivateRoute>
                                 <AccessHistoryInstitution/>
+                            </PrivateRoute>
+                        }/>
+                    <Route
+                        path="/current-access"
+                        element={
+                            <PrivateRoute>
+                                <CurrentAccess/>
+                            </PrivateRoute>
+                        }/>
+                    <Route
+                        path="/basic-data"
+                        element={
+                            <PrivateRoute>
+                                <BasicDataViewEdit/>
                             </PrivateRoute>
                         }/>
                     <Route path="*" element={<NotFound/>}/>
