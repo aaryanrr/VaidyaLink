@@ -33,6 +33,7 @@ public class InstitutionService {
     private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
     private final MailgunService mailgunService;
+    private final BlockchainService blockchainService;
     private static final Logger logger = LoggerFactory.getLogger(InstitutionService.class);
 
 
@@ -40,7 +41,7 @@ public class InstitutionService {
                               TokenRepository tokenRepository, JwtUtil jwtUtil,
                               InstitutionAccessDataRepository institutionAccessDataRepository,
                               AccessRequestRepository accessRequestRepository, UserRepository userRepository,
-                              MailgunService mailgunService) {
+                              MailgunService mailgunService, BlockchainService blockchainService) {
         this.institutionRepository = institutionRepository;
         this.passwordEncoder = passwordEncoder;
         this.tokenRepository = tokenRepository;
@@ -48,6 +49,7 @@ public class InstitutionService {
         this.institutionAccessDataRepository = institutionAccessDataRepository;
         this.accessRequestRepository = accessRequestRepository;
         this.userRepository = userRepository;
+        this.blockchainService = blockchainService;
         this.mailgunService = mailgunService;
     }
 
@@ -63,9 +65,11 @@ public class InstitutionService {
         institution.setEmail(email);
         institution.setPassword(passwordEncoder.encode(rawPassword));
         institution.setLicenseFilePath(licenseFilePath);
-        institution.setRegistrationNumber(generateAndCheckRegNumber());
+        String regNum = generateAndCheckRegNumber();
+        institution.setRegistrationNumber(regNum);
 
         institutionRepository.save(institution);
+        blockchainService.logInstitutionRegistered(regNum, "New Institution Registered: " + institutionName);
     }
 
     public Optional<Institution> findByEmail(String email) {
@@ -185,6 +189,7 @@ public class InstitutionService {
             institutionAccessDataRepository.save(data);
             requestSync(accessKey, accessRequestId, EncryptionUtil.encryptDecryptString("decrypt",
                     data.getEmail(), accessKey), data.getInstitutionRegistrationNumber());
+            blockchainService.logDataEditedForUser(data.getEmail(), "Data Edited by Institution " + data.getInstitutionRegistrationNumber());
         }
         Map<String, Object> result = new HashMap<>();
         result.put("name", EncryptionUtil.encryptDecryptString("decrypt", data.getName(), accessKey));
@@ -199,6 +204,7 @@ public class InstitutionService {
         result.put("weightKg", EncryptionUtil.encryptDecryptDouble("decrypt", data.getWeightKg(), accessKey));
         result.put("canEdit", canEdit);
         result.put("canView", canView);
+        blockchainService.logBasicDataViewed(data.getEmail(), "Data Viewed by Institution " + data.getInstitutionRegistrationNumber());
         return result;
     }
 
@@ -212,6 +218,7 @@ public class InstitutionService {
                 + "The institution's access key to complete the sync is: " + accessKey + "\n\n"
                 + "Best regards,\nVaidyaLink Team";
         mailgunService.sendEmail(userEmail, "VaidyaLink Data Sync Approval", emailBody);
+        blockchainService.logBasicDataViewed(userEmail, "Data Sync Requested by Institution " + regNum);
     }
 
 

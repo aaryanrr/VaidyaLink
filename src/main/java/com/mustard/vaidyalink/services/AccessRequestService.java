@@ -32,16 +32,19 @@ public class AccessRequestService {
     private final InstitutionAccessDataRepository institutionAccessDataRepository;
     private final InstitutionRepository institutionRepository;
     private final PasswordEncoder passwordEncoder;
+    private final BlockchainService blockchainService;
 
     public AccessRequestService(AccessRequestRepository accessRequestRepository, MailgunService mailgunService,
                                 UserRepository userRepository, InstitutionAccessDataRepository institutionAccessDataRepository,
-                                InstitutionRepository institutionRepository, PasswordEncoder passwordEncoder) {
+                                InstitutionRepository institutionRepository, PasswordEncoder passwordEncoder,
+                                BlockchainService blockchainService) {
         this.accessRequestRepository = accessRequestRepository;
         this.mailgunService = mailgunService;
         this.userRepository = userRepository;
         this.institutionAccessDataRepository = institutionAccessDataRepository;
         this.institutionRepository = institutionRepository;
         this.passwordEncoder = passwordEncoder;
+        this.blockchainService = blockchainService;
     }
 
     public void createAccessRequest(AccessRequestDto requestDto, String institutionName, String institutionRegNum) {
@@ -61,7 +64,7 @@ public class AccessRequestService {
             accessRequestRepository.save(accessRequest);
 
             generateAccessEmail(accessRequest, institutionName, institutionRegNum, requestDto, user);
-
+            blockchainService.logAccessRequestCreated(user.getEmail(), "Access request created by Institution " + institutionRegNum);
         } else {
             throw new IllegalArgumentException("User with provided Aadhaar Number not Found!");
         }
@@ -127,6 +130,7 @@ public class AccessRequestService {
             req.setApproved(false);
             accessRequestRepository.save(req);
             institutionAccessDataRepository.deleteAll(institutionAccessDataRepository.findAllByAccessRequestId(uuid));
+            blockchainService.logAccessRevoked(req.getAadhaarNumber(), "Access request revoked for Institution " + req.getInstitutionRegistrationNumber());
             return true;
         } catch (Exception e) {
             return false;
@@ -175,6 +179,7 @@ public class AccessRequestService {
         instOpt.ifPresent(inst -> mailgunService.sendEmail(inst.getEmail(),
                 "VaidyaLink Access Key",
                 "Your access key for request ID " + accessRequestId + " is: " + newAccessPassword));
+        blockchainService.logAccessRequestApproved(user.getEmail(), "Access request approved for Institution " + institutionRegNum);
     }
 
     @Scheduled(fixedRate = 3600000)
@@ -186,6 +191,8 @@ public class AccessRequestService {
             institutionAccessDataRepository.deleteAll(institutionAccessDataRepository.findAllByAccessRequestId(req.getId()));
             Optional<User> userOpt = userRepository.findByAadhaarNumberHash(req.getAadhaarNumber());
             Optional<Institution> instOpt = institutionRepository.findByRegistrationNumber(req.getInstitutionRegistrationNumber());
+            userOpt.ifPresent(user -> blockchainService.logAccessRevoked(
+                    user.getEmail(), "Expired access requests revoked for Institution " + req.getInstitutionRegistrationNumber()));
             userOpt.ifPresent(user -> mailgunService.sendEmail(user.getEmail(),
                     "VaidyaLink Access Revoked",
                     "Your access for request ID " + req.getId() + " has been revoked due to expiry."));

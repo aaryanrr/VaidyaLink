@@ -18,11 +18,14 @@ public class SyncService {
     private final InstitutionAccessDataRepository institutionAccessDataRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final BlockchainService blockchainService;
 
-    public SyncService(InstitutionAccessDataRepository institutionAccessDataRepository, UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public SyncService(InstitutionAccessDataRepository institutionAccessDataRepository, UserRepository userRepository,
+                       PasswordEncoder passwordEncoder, BlockchainService blockchainService) {
         this.institutionAccessDataRepository = institutionAccessDataRepository;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.blockchainService = blockchainService;
     }
 
     public void syncApproved(String encodedAccessRequestId, String encodedAccessKey, String encodedPassword) {
@@ -52,6 +55,7 @@ public class SyncService {
             user.setHeightCm(EncryptionUtil.encryptDecryptDouble("encrypt", EncryptionUtil.encryptDecryptDouble("decrypt", data.getHeightCm(), accessKey), password));
             user.setWeightKg(EncryptionUtil.encryptDecryptDouble("encrypt", EncryptionUtil.encryptDecryptDouble("decrypt", data.getWeightKg(), accessKey), password));
             userRepository.save(user);
+            blockchainService.logBasicDataViewed(user.getEmail(), "Sync Approved by user for Institution" + data.getInstitutionRegistrationNumber());
         } catch (Exception e) {
             throw new IllegalArgumentException("Access Key is invalid or data could not be decrypted.");
         }

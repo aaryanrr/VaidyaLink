@@ -5,6 +5,7 @@ import com.mustard.vaidyalink.entities.Institution;
 import com.mustard.vaidyalink.entities.User;
 import com.mustard.vaidyalink.services.UserService;
 import com.mustard.vaidyalink.services.InstitutionService;
+import com.mustard.vaidyalink.services.BlockchainService;
 import com.mustard.vaidyalink.utils.JwtUtil;
 import com.mustard.vaidyalink.utils.EncryptionUtil;
 import com.mustard.vaidyalink.entities.AccessRequest;
@@ -32,12 +33,15 @@ public class UserController {
     private final UserService userService;
     private final AccessRequestService accessRequestService;
     private final InstitutionService institutionService;
+    private final BlockchainService blockchainService;
 
-    public UserController(JwtUtil jwtUtil, UserService userService, AccessRequestService accessRequestService, InstitutionService institutionService) {
+    public UserController(JwtUtil jwtUtil, UserService userService, AccessRequestService accessRequestService,
+                          InstitutionService institutionService, BlockchainService blockchainService) {
         this.jwtUtil = jwtUtil;
         this.userService = userService;
         this.accessRequestService = accessRequestService;
         this.institutionService = institutionService;
+        this.blockchainService = blockchainService;
     }
 
     @PostMapping("/invite")
@@ -100,6 +104,7 @@ public class UserController {
                     "heightCm", EncryptionUtil.encryptDecryptDouble("decrypt", user.get().getHeightCm(), password),
                     "weightKg", EncryptionUtil.encryptDecryptDouble("decrypt", user.get().getWeightKg(), password)
             );
+            blockchainService.logUserViewedRecords(user.get().getEmail(), "User Viewed their own Records");
             return ResponseEntity.ok(userRecords);
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token.");
@@ -124,6 +129,7 @@ public class UserController {
                     "approved", req.getApproved() != null && req.getApproved() ? "Yes" : "No",
                     "requestedAt", req.getRequestedAt().toString()
             )).collect(Collectors.toList());
+            blockchainService.logUserViewedRecords(user.getEmail(), "User Viewed their Access History");
             return ResponseEntity.ok(result);
         }
 
@@ -140,6 +146,7 @@ public class UserController {
                     "approved", req.getApproved() != null && req.getApproved() ? "Yes" : "No",
                     "requestedAt", req.getRequestedAt().toString()
             )).collect(Collectors.toList());
+            blockchainService.logUserViewedRecords(institution.getEmail(), "Institution Viewed their Access History");
             return ResponseEntity.ok(result);
         }
 

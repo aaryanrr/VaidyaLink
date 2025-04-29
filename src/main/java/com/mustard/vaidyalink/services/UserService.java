@@ -21,13 +21,17 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final MailgunService mailgunService;
     private final TokenRepository tokenRepository;
+    private final BlockchainService blockchainService;
     private final JwtUtil jwtUtil;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, MailgunService mailgunService, TokenRepository tokenRepository, JwtUtil jwtUtil) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder,
+                       MailgunService mailgunService, TokenRepository tokenRepository, JwtUtil jwtUtil,
+                       BlockchainService blockchainService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.mailgunService = mailgunService;
         this.tokenRepository = tokenRepository;
+        this.blockchainService = blockchainService;
         this.jwtUtil = jwtUtil;
     }
 
@@ -53,6 +57,7 @@ public class UserService {
         User savedUser = userRepository.save(user);
         if (savedUser.getId() != null) {
             mailgunService.sendPasswordEmail(email, "VaidyaLink Login Password", rawPassword);
+            blockchainService.logUserInvited(email, "User Invite");
         } else {
             throw new RuntimeException("Failed to save user to the database.");
         }
@@ -107,6 +112,7 @@ public class UserService {
 
     public void deleteUserAndTokens(User user, String token) {
         mailgunService.sendEmail(user.getEmail(), "Account Deletion", "Your account associated with has been deleted.");
+        blockchainService.logUserAccountDeleted(user.getEmail(), "User Deleted their Account");
         userRepository.delete(user);
         invalidateToken(token);
     }
