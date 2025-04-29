@@ -2,14 +2,23 @@ package com.mustard.vaidyalink.services;
 
 import com.mustard.vaidyalink.dtos.AccessRequestDto;
 import com.mustard.vaidyalink.entities.AccessRequest;
-import com.mustard.vaidyalink.repositories.AccessRequestRepository;
+import com.mustard.vaidyalink.entities.InstitutionAccessData;
+import com.mustard.vaidyalink.entities.Institution;
 import com.mustard.vaidyalink.entities.User;
+import com.mustard.vaidyalink.repositories.InstitutionAccessDataRepository;
+import com.mustard.vaidyalink.repositories.InstitutionRepository;
+import com.mustard.vaidyalink.repositories.AccessRequestRepository;
 import com.mustard.vaidyalink.repositories.UserRepository;
+import com.mustard.vaidyalink.utils.EncryptionUtil;
+import com.mustard.vaidyalink.utils.GenerationUtil;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.util.UUID;
 import java.util.Optional;
 import java.util.List;
@@ -20,11 +29,19 @@ public class AccessRequestService {
     private final AccessRequestRepository accessRequestRepository;
     private final UserRepository userRepository;
     private final MailgunService mailgunService;
+    private final InstitutionAccessDataRepository institutionAccessDataRepository;
+    private final InstitutionRepository institutionRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public AccessRequestService(AccessRequestRepository accessRequestRepository, MailgunService mailgunService, UserRepository userRepository) {
+    public AccessRequestService(AccessRequestRepository accessRequestRepository, MailgunService mailgunService,
+                                UserRepository userRepository, InstitutionAccessDataRepository institutionAccessDataRepository,
+                                InstitutionRepository institutionRepository, PasswordEncoder passwordEncoder) {
         this.accessRequestRepository = accessRequestRepository;
         this.mailgunService = mailgunService;
         this.userRepository = userRepository;
+        this.institutionAccessDataRepository = institutionAccessDataRepository;
+        this.institutionRepository = institutionRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public void createAccessRequest(AccessRequestDto requestDto, String institutionName, String institutionRegNum) {
@@ -54,17 +71,6 @@ public class AccessRequestService {
         return accessRequestRepository.findAllByAadhaarNumber(aadhaarHash);
     }
 
-    public void approveAccessRequest(UUID id) {
-        Optional<AccessRequest> accessRequestOptional = accessRequestRepository.findById(id);
-        if (accessRequestOptional.isPresent()) {
-            AccessRequest accessRequest = accessRequestOptional.get();
-            accessRequest.setApproved(true);
-            accessRequestRepository.save(accessRequest);
-        } else {
-            throw new IllegalArgumentException("Access Request with provided ID not Found!");
-        }
-    }
-
     private void generateAccessEmail(AccessRequest accessRequest, String institutionName, String institutionRegNum, AccessRequestDto requestDto, User user) {
         String emailBody = String.format(
                 """
@@ -77,7 +83,7 @@ public class AccessRequestService {
                         Action Required: %s
                         
                         Please click the following link to approve or deny this request:
-                        http://localhost:8080/api/access-requests/approve?id=%s
+                        http://localhost:3000/approve-access-request?id=%s
                         
                         Sincerely,
                         VaidyaLink Team""",
@@ -120,13 +126,73 @@ public class AccessRequestService {
             }
             req.setApproved(false);
             accessRequestRepository.save(req);
+            institutionAccessDataRepository.deleteAll(institutionAccessDataRepository.findAllByAccessRequestId(uuid));
             return true;
         } catch (Exception e) {
             return false;
         }
     }
 
+
     public List<AccessRequest> getAccessRequestsByInstitutionRegistrationNumber(String regNum) {
         return accessRequestRepository.findAllByInstitutionRegistrationNumber(regNum);
     }
+
+    public void approveAccessRequestWithPassword(String accessRequestId, String password) {
+        UUID uuid = UUID.fromString(accessRequestId);
+        Optional<AccessRequest> accessRequestOpt = accessRequestRepository.findById(uuid);
+        if (accessRequestOpt.isEmpty()) throw new IllegalArgumentException("Invalid access request ID.");
+        AccessRequest accessRequest = accessRequestOpt.get();
+        String aadhaarHash = accessRequest.getAadhaarNumber();
+        Optional<User> userOpt = userRepository.findByAadhaarNumberHash(aadhaarHash);
+        if (userOpt.isEmpty()) throw new IllegalArgumentException("User not found.");
+        User user = userOpt.get();
+        if (!passwordEncoder.matches(password, user.getPassword()))
+            throw new IllegalArgumentException("Incorrect password.");
+        accessRequest.setApproved(true);
+        accessRequestRepository.save(accessRequest);
+
+        String institutionRegNum = accessRequest.getInstitutionRegistrationNumber();
+
+        String newAccessPassword = GenerationUtil.generateSecurePassword();
+
+        InstitutionAccessData data = new InstitutionAccessData();
+        data.setAccessRequestId(accessRequest.getId());
+        data.setInstitutionRegistrationNumber(institutionRegNum);
+        data.setName(EncryptionUtil.encryptDecryptString("encrypt", EncryptionUtil.encryptDecryptString("decrypt", user.getName(), password), newAccessPassword));
+        data.setEmail(EncryptionUtil.encryptDecryptString("encrypt", user.getEmail(), newAccessPassword));
+        data.setPhoneNumber(EncryptionUtil.encryptDecryptString("encrypt", EncryptionUtil.encryptDecryptString("decrypt", user.getPhoneNumber(), password), newAccessPassword));
+        data.setDateOfBirth(EncryptionUtil.encryptDecryptDate("encrypt", EncryptionUtil.encryptDecryptDate("decrypt", user.getDateOfBirth(), password), newAccessPassword));
+        data.setAddress(EncryptionUtil.encryptDecryptString("encrypt", EncryptionUtil.encryptDecryptString("decrypt", user.getAddress(), password), newAccessPassword));
+        data.setBloodGroup(EncryptionUtil.encryptDecryptString("encrypt", EncryptionUtil.encryptDecryptString("decrypt", user.getBloodGroup(), password), newAccessPassword));
+        data.setEmergencyContact(EncryptionUtil.encryptDecryptString("encrypt", EncryptionUtil.encryptDecryptString("decrypt", user.getEmergencyContact(), password), newAccessPassword));
+        data.setAllergies(EncryptionUtil.encryptDecryptString("encrypt", EncryptionUtil.encryptDecryptString("decrypt", user.getAllergies(), password), newAccessPassword));
+        data.setHeightCm(EncryptionUtil.encryptDecryptDouble("encrypt", EncryptionUtil.encryptDecryptDouble("decrypt", user.getHeightCm(), password), newAccessPassword));
+        data.setWeightKg(EncryptionUtil.encryptDecryptDouble("encrypt", EncryptionUtil.encryptDecryptDouble("decrypt", user.getWeightKg(), password), newAccessPassword));
+        institutionAccessDataRepository.save(data);
+
+        Optional<Institution> instOpt = institutionRepository.findByRegistrationNumber(institutionRegNum);
+        instOpt.ifPresent(inst -> mailgunService.sendEmail(inst.getEmail(),
+                "VaidyaLink Access Key",
+                "Your access key for request ID " + accessRequestId + " is: " + newAccessPassword));
+    }
+
+    @Scheduled(fixedRate = 3600000)
+    public void revokeExpiredAccessRequests() {
+        List<AccessRequest> expired = accessRequestRepository.findAllByTimePeriodBeforeAndApprovedIsTrue(LocalDate.now());
+        for (AccessRequest req : expired) {
+            req.setApproved(false);
+            accessRequestRepository.save(req);
+            institutionAccessDataRepository.deleteAll(institutionAccessDataRepository.findAllByAccessRequestId(req.getId()));
+            Optional<User> userOpt = userRepository.findByAadhaarNumberHash(req.getAadhaarNumber());
+            Optional<Institution> instOpt = institutionRepository.findByRegistrationNumber(req.getInstitutionRegistrationNumber());
+            userOpt.ifPresent(user -> mailgunService.sendEmail(user.getEmail(),
+                    "VaidyaLink Access Revoked",
+                    "Your access for request ID " + req.getId() + " has been revoked due to expiry."));
+            instOpt.ifPresent(institution -> mailgunService.sendEmail(institution.getEmail(),
+                    "VaidyaLink Access Revoked",
+                    "Your access for request ID " + req.getId() + " has been revoked due to expiry."));
+        }
+    }
+
 }
