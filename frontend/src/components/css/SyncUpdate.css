@@ -1,0 +1,105 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+:root {
+    --primary-bg: #1F1B24;
+    --text-color: #E1E1E6;
+    --accent-color: #BB86FC;
+    --input-bg: #3C3C44;
+    --input-text-color: #E1E1E6;
+    --input-border-color: #5A5A66;
+    --button-bg: #BB86FC;
+    --button-hover-bg: #9B65E7;
+    --button-text-color: #1F1B24;
+    font-family: 'Roboto', sans-serif;
+}
+
+.sync-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background-color: var(--primary-bg);
+    color: var(--text-color);
+    text-align: center;
+    padding: 20px;
+    position: relative;
+}
+
+.sync-logo {
+    height: 190px;
+}
+
+.sync-title {
+    font-size: 2.5rem;
+    font-weight: 500;
+    margin-bottom: 40px;
+    letter-spacing: 1px;
+}
+
+.sync-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto 30px auto;
+}
+
+.sync-input {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 10px 0;
+    border: 1px solid var(--input-border-color);
+    border-radius: 5px;
+    background-color: var(--input-bg);
+    color: var(--input-text-color);
+    font-size: 16px;
+    outline: none;
+}
+
+.sync-input:focus {
+    border-color: var(--accent-color);
+}
+
+.sync-button {
+    background-color: var(--button-bg);
+    border: none;
+    color: var(--button-text-color);
+    padding: 15px 30px;
+    font-size: 18px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.sync-button:hover {
+    background-color: var(--button-hover-bg);
+}
+
+.success-message {
+    color: green;
+    margin-top: 12px;
+    font-size: 1.1rem;
+}
+
+.error-message {
+    color: red;
+    margin-top: 20px;
+    font-size: 1.1rem;
+}
+
+.sync-footer {
+    width: 100%;
+    max-width: 1200px;
+    padding: 20px 0;
+    background-color: var(--primary-bg);
+    color: #888;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    text-align: center;
+    font-size: 1rem;
+}
