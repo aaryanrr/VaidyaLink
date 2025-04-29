@@ -56,6 +56,7 @@ Dockerfile.dev
 
 ### MISC ###
 uploads/
+contract_address.txt
 
 ### ENV FILE ###
 .env
