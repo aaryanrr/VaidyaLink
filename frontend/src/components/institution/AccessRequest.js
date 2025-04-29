@@ -17,11 +17,16 @@ const AccessRequest = () => {
         const options = Array.from(e.target.selectedOptions, option => option.value);
         setDataCategory(options);
     };
-
+    
     const handleActionRequiredChange = (e) => {
         const options = Array.from(e.target.selectedOptions, option => option.value);
-        setActionRequired(options);
+        if (options.includes('Write') && !options.includes('Read')) {
+            setActionRequired(['Read']);
+        } else {
+            setActionRequired(options);
+        }
     };
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
