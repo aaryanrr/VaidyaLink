@@ -17,6 +17,26 @@ CREATE TABLE users
     updated_at          TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
+CREATE TABLE institution_access_db
+(
+    id                              BINARY(16) PRIMARY KEY,
+    access_request_id               BINARY(16)    NOT NULL,
+    institution_registration_number VARCHAR(255)  NOT NULL,
+    name                            VARCHAR(1024) NOT NULL,
+    email                           VARCHAR(1024) NOT NULL,
+    phone_number                    VARCHAR(1024) NOT NULL,
+    date_of_birth                   DATE          NOT NULL,
+    address                         VARCHAR(1024) NOT NULL,
+    blood_group                     VARCHAR(1024) NOT NULL,
+    emergency_contact               VARCHAR(1024) NOT NULL,
+    allergies                       VARCHAR(1024) NOT NULL,
+    height_cm                       DECIMAL(5, 2) NOT NULL,
+    weight_kg                       DECIMAL(5, 2) NOT NULL,
+    stored_at                       TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_access_request FOREIGN KEY (access_request_id) REFERENCES access_requests (id) ON DELETE CASCADE,
+    CONSTRAINT fk_institution_reg FOREIGN KEY (institution_registration_number) REFERENCES institutions (registration_number) ON DELETE CASCADE
+);
+
 
 CREATE TABLE institutions
 (
@@ -57,3 +77,5 @@ CREATE TABLE access_requests
 CREATE INDEX idx_users_aadhaar_hash ON users (aadhaar_number_hash);
 CREATE INDEX idx_institutions_email ON institutions (email);
 CREATE INDEX idx_users_email ON users (email);
+CREATE INDEX idx_institution_access_db_request ON institution_access_db (access_request_id);
+CREATE INDEX idx_institution_access_db_institution ON institution_access_db (institution_registration_number);
