@@ -45,7 +45,7 @@ public class SecurityConfig {
                                 "/api/institutions/logout",
                                 "/api/users/logout",
                                 "/api/access-requests/request",
-                                "/api/access-requests/approve",
+                                "/api/access-requests/approve-access",
                                 "/api/users/access-requests",
                                 "/api/users/delete-account",
                                 "/api/users/revoke-access")
@@ -60,7 +60,7 @@ public class SecurityConfig {
                 }))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/static/**", "/favicon.ico", "/api/users/login", "/api/institutions/login",
-                                "/api/institutions/register", "/api/status", "/api/access-requests/approve",
+                                "/api/institutions/register", "/api/status", "/api/access-requests/approve-access",
                                 "/api/users/records", "/api/users/access-requests", "/api/users/delete-account",
                                 "/api/users/revoke-access").permitAll()
                         .requestMatchers("/api/users/invite").authenticated() // Ensure invite endpoint requires authentication
