@@ -11,7 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 import jakarta.servlet.http.HttpServletRequest;
 
-import java.util.UUID;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -49,13 +49,27 @@ public class AccessRequestController {
         }
     }
 
-    @GetMapping("/approve")
-    public ResponseEntity<?> approveAccessRequest(@RequestParam UUID id) {
+    @PostMapping("/approve-access")
+    public ResponseEntity<?> approveAccessRequestWithPassword(@RequestBody Map<String, String> body) {
+        String encodedId = body.get("accessRequestId");
+        String encodedPassword = body.get("password");
+        if (encodedId == null || encodedPassword == null) {
+            return ResponseEntity.badRequest().body("Missing fields.");
+        }
+        String accessRequestId;
+        String password;
         try {
-            accessRequestService.approveAccessRequest(id);
-            return ResponseEntity.ok("Access request approved successfully");
+            accessRequestId = new String(java.util.Base64.getDecoder().decode(encodedId));
+            password = new String(java.util.Base64.getDecoder().decode(encodedPassword));
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+            return ResponseEntity.badRequest().body("Invalid encoding.");
+        }
+        try {
+            accessRequestService.approveAccessRequestWithPassword(accessRequestId, password);
+            return ResponseEntity.ok("Access Request Approved Successfully.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
+
 }
