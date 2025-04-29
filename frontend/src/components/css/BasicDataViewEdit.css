@@ -1,0 +1,126 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+:root {
+    --primary-bg: #1F1B24;
+    --text-color: #E1E1E6;
+    --accent-color: #BB86FC;
+    --input-bg: #3C3C44;
+    --input-text-color: #E1E1E6;
+    --input-border-color: #5A5A66;
+    --button-bg: #BB86FC;
+    --button-hover-bg: #9B65E7;
+    --button-text-color: #1F1B24;
+    font-family: 'Roboto', sans-serif;
+}
+
+.basicdata-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    background-color: var(--primary-bg);
+    color: var(--text-color);
+    text-align: center;
+    padding: 20px;
+    position: relative;
+}
+
+.basicdata-logo {
+    width: 160px;
+}
+
+.basicdata-title {
+    font-size: 2.5rem;
+    font-weight: 500;
+    margin-bottom: 40px;
+    margin-top: 10px;
+    letter-spacing: 1px;
+}
+
+.basicdata-form {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px 40px;
+    width: 100%;
+    max-width: 900px;
+    margin-bottom: 40px;
+}
+
+.basicdata-row {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    min-width: 350px;
+    margin-bottom: 10px;
+}
+
+.basicdata-row label {
+    font-weight: 500;
+    margin-bottom: 6px;
+}
+
+.basicdata-row input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid var(--input-border-color);
+    border-radius: 5px;
+    background-color: var(--input-bg);
+    color: var(--input-text-color);
+    font-size: 1rem;
+    outline: none;
+}
+
+.basicdata-row input:disabled {
+    background-color: #2D2D36;
+    color: #aaa;
+}
+
+.basicdata-buttons {
+    display: flex;
+    gap: 30px;
+    width: 100%;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.basicdata-back, .basicdata-edit, .basicdata-save {
+    background-color: var(--button-bg);
+    color: var(--button-text-color);
+    border: none;
+    padding: 12px 30px;
+    font-size: 1.1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.basicdata-back:hover, .basicdata-edit:hover, .basicdata-save:hover {
+    background-color: var(--button-hover-bg);
+}
+
+.basicdata-success {
+    color: green;
+    margin-top: 18px;
+    font-size: 1.1rem;
+}
+
+.basicdata-error {
+    color: red;
+    margin-top: 18px;
+    font-size: 1.1rem;
+}
+
+.basicdata-footer {
+    width: 100%;
+    max-width: 1200px;
+    padding: 20px 0 0 0;
+    background-color: var(--primary-bg);
+    color: #888;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    text-align: center;
+    font-size: 1rem;
+}
